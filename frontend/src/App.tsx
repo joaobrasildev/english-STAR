@@ -1,17 +1,21 @@
 import './App.css'
+import { useSessionSetup } from './hooks/useSessionSetup'
+import { SessionSetup } from './pages/SessionSetup'
 
-function App() {
+export function App() {
+  const sessionSetup = useSessionSetup()
+
   return (
-    <main className="app-shell">
-      <section className="hero-card">
-        <p className="eyebrow">Bootstrap ready</p>
-        <h1>English STAR Speed Trainer</h1>
-        <p className="description">
-          The monorepo foundation is in place for the React frontend, NestJS backend,
-          and local SQL Server environment.
-        </p>
-      </section>
-    </main>
+    <SessionSetup
+      rawQuestionBlock={sessionSetup.rawQuestionBlock}
+      targetSecondsInput={sessionSetup.targetSecondsInput}
+      parsedQuestions={sessionSetup.parsedQuestions}
+      errorMessage={sessionSetup.errorMessage}
+      preparedSession={sessionSetup.preparedSession}
+      onQuestionBlockChange={sessionSetup.setRawQuestionBlock}
+      onTargetSecondsChange={sessionSetup.setTargetSecondsInput}
+      onStartSession={sessionSetup.handleStartSession}
+    />
   )
 }
 

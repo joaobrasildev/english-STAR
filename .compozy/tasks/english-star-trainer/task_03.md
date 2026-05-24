@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "Criar a tela de preparação da sessão com parser de perguntas"
 type: frontend
 complexity: medium
@@ -28,10 +28,10 @@ Esta task implementa a entrada da sessão de treino, onde o usuário cola um blo
 </requirements>
 
 ## Subtasks
-- [ ] 3.1 Criar a tela de preparação da sessão com entrada do bloco de perguntas e definição de tempo.
-- [ ] 3.2 Implementar o parser de perguntas enumeradas com suporte às regras mínimas definidas no TechSpec.
-- [ ] 3.3 Exibir a pré-visualização da lista de perguntas gerada pelo parser.
-- [ ] 3.4 Persistir em memória local o estado da sessão inicial para destravar a tela de prática.
+- [x] 3.1 Criar a tela de preparação da sessão com entrada do bloco de perguntas e definição de tempo.
+- [x] 3.2 Implementar o parser de perguntas enumeradas com suporte às regras mínimas definidas no TechSpec.
+- [x] 3.3 Exibir a pré-visualização da lista de perguntas gerada pelo parser.
+- [x] 3.4 Persistir em memória local o estado da sessão inicial para destravar a tela de prática.
 
 ## Implementation Details
 Seguir o TechSpec "Data Models", "Regras do parser de perguntas" e "Development Sequencing". Esta task não deve implementar timer, campos STAR nem integração de salvamento com backend.
@@ -63,13 +63,13 @@ Seguir o TechSpec "Data Models", "Regras do parser de perguntas" e "Development 
 
 ## Tests
 - Unit tests:
-  - [ ] Validar que o parser separa corretamente perguntas com formato `1.` e `2.`.
-  - [ ] Validar que linhas sem nova enumeração são anexadas à pergunta anterior.
-  - [ ] Validar que um bloco sem perguntas válidas impede a criação da sessão.
+  - [x] Validar que o parser separa corretamente perguntas com formato `1.` e `2.`.
+  - [x] Validar que linhas sem nova enumeração são anexadas à pergunta anterior.
+  - [x] Validar que um bloco sem perguntas válidas impede a criação da sessão.
 - Integration tests:
-  - [ ] Colar uma lista numerada válida gera pré-visualização com a mesma ordem das perguntas.
-  - [ ] Informar tempo-alvo e iniciar a sessão cria estado inicial com `currentIndex` igual a zero.
-  - [ ] Tentar iniciar a sessão com bloco inválido exibe erro e não avança para a prática.
+  - [x] Colar uma lista numerada válida gera pré-visualização com a mesma ordem das perguntas.
+  - [x] Informar tempo-alvo e iniciar a sessão cria estado inicial com `currentIndex` igual a zero.
+  - [x] Tentar iniciar a sessão com bloco inválido exibe erro e não avança para a prática.
 - Test coverage target: >=80%
 - All tests must pass
 
