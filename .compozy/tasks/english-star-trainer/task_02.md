@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "Implementar persistência e API de respostas no backend"
 type: backend
 complexity: high
@@ -28,11 +28,11 @@ Esta task implementa a base funcional do backend responsável por salvar respost
 </requirements>
 
 ## Subtasks
-- [ ] 2.1 Criar o schema inicial de persistência para `answer_records`.
-- [ ] 2.2 Implementar a conexão do backend com o SQL Server e a camada de acesso a dados.
-- [ ] 2.3 Expor o endpoint de salvamento de respostas finalizadas com validação de payload.
-- [ ] 2.4 Expor os endpoints de listagem de sessões e respostas por sessão.
-- [ ] 2.5 Garantir tratamento explícito de erros e contratos coerentes com o TechSpec.
+- [x] 2.1 Criar o schema inicial de persistência para `answer_records`.
+- [x] 2.2 Implementar a conexão do backend com o SQL Server e a camada de acesso a dados.
+- [x] 2.3 Expor o endpoint de salvamento de respostas finalizadas com validação de payload.
+- [x] 2.4 Expor os endpoints de listagem de sessões e respostas por sessão.
+- [x] 2.5 Garantir tratamento explícito de erros e contratos coerentes com o TechSpec.
 
 ## Implementation Details
 Seguir o TechSpec "Core Interfaces", "Data Models" e "API Endpoints". Esta task deve limitar-se ao backend e ao banco, sem assumir navegação de frontend ou lógica de timer da UI.
@@ -66,14 +66,14 @@ Seguir o TechSpec "Core Interfaces", "Data Models" e "API Endpoints". Esta task 
 
 ## Tests
 - Unit tests:
-  - [ ] Validar que payload sem `sessionId` retorna erro descritivo.
-  - [ ] Validar que `elapsedSeconds` inválido é rejeitado pelo backend.
-  - [ ] Validar que o agrupamento de sessões retorna totais corretos por `sessionId`.
+  - [x] Validar que payload sem `sessionId` retorna erro descritivo.
+  - [x] Validar que `elapsedSeconds` inválido é rejeitado pelo backend.
+  - [x] Validar que o agrupamento de sessões retorna totais corretos por `sessionId`.
 - Integration tests:
-  - [ ] `POST /answers` com payload válido persiste um registro e retorna `201 Created`.
-  - [ ] `POST /answers` com payload inválido retorna `400 Bad Request`.
-  - [ ] `GET /sessions` retorna sessões agrupadas com total de respostas salvo.
-  - [ ] `GET /sessions/:sessionId/answers` retorna respostas ordenadas por `questionOrder`.
+  - [x] `POST /answers` com payload válido persiste um registro e retorna `201 Created`.
+  - [x] `POST /answers` com payload inválido retorna `400 Bad Request`.
+  - [x] `GET /sessions` retorna sessões agrupadas com total de respostas salvo.
+  - [x] `GET /sessions/:sessionId/answers` retorna respostas ordenadas por `questionOrder`.
 - Test coverage target: >=80%
 - All tests must pass
 
