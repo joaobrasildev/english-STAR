@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "Implementar a experiência de resposta STAR com timer e overtime"
 type: frontend
 complexity: high
@@ -28,10 +28,10 @@ Esta task cria a tela principal de prática com uma pergunta por vez, campos S/T
 </requirements>
 
 ## Subtasks
-- [ ] 4.1 Criar a tela de prática com pergunta atual, campos STAR e área de resposta consolidada.
-- [ ] 4.2 Implementar o estado do timer com transições entre `idle`, `countdown`, `overtime` e `completed`.
-- [ ] 4.3 Implementar o alerta visual e sonoro ao zerar o tempo-alvo.
-- [ ] 4.4 Garantir que a resposta consolidada reflita automaticamente o conteúdo dos campos STAR enquanto o usuário escreve.
+- [x] 4.1 Criar a tela de prática com pergunta atual, campos STAR e área de resposta consolidada.
+- [x] 4.2 Implementar o estado do timer com transições entre `idle`, `countdown`, `overtime` e `completed`.
+- [x] 4.3 Implementar o alerta visual e sonoro ao zerar o tempo-alvo.
+- [x] 4.4 Garantir que a resposta consolidada reflita automaticamente o conteúdo dos campos STAR enquanto o usuário escreve.
 
 ## Implementation Details
 Seguir o TechSpec "Core Interfaces", "Modelo de sessão no frontend" e "Known Risks". Esta task deve permanecer no frontend e não deve assumir persistência remota; o foco aqui é a experiência local de resposta.
@@ -62,13 +62,13 @@ Seguir o TechSpec "Core Interfaces", "Modelo de sessão no frontend" e "Known Ri
 
 ## Tests
 - Unit tests:
-  - [ ] Validar que a resposta consolidada reúne S, T, A e R na ordem correta como parágrafos distintos.
-  - [ ] Validar que o timer muda de `idle` para `countdown` apenas após iniciar a questão.
-  - [ ] Validar que o timer entra em `overtime` ao chegar a zero sem zerar o tempo acumulado.
+  - [x] Validar que a resposta consolidada reúne S, T, A e R na ordem correta como parágrafos distintos.
+  - [x] Validar que o timer muda de `idle` para `countdown` apenas após iniciar a questão.
+  - [x] Validar que o timer entra em `overtime` ao chegar a zero sem zerar o tempo acumulado.
 - Integration tests:
-  - [ ] Iniciar uma questão exibe a pergunta atual, dispara o timer e mantém a edição dos campos STAR disponível.
-  - [ ] Ao chegar a zero, o alerta visual aparece e o som curto é disparado uma vez sem interromper a resposta.
-  - [ ] Alterar qualquer campo STAR atualiza imediatamente a resposta consolidada exibida ao usuário.
+  - [x] Iniciar uma questão exibe a pergunta atual, dispara o timer e mantém a edição dos campos STAR disponível.
+  - [x] Ao chegar a zero, o alerta visual aparece e o som curto é disparado uma vez sem interromper a resposta.
+  - [x] Alterar qualquer campo STAR atualiza imediatamente a resposta consolidada exibida ao usuário.
 - Test coverage target: >=80%
 - All tests must pass
 

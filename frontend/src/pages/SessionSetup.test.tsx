@@ -34,8 +34,8 @@ describe('Session setup flow', () => {
     await user.type(screen.getByLabelText('Target time (seconds)'), '150')
     await user.click(screen.getByRole('button', { name: 'Start session' }))
 
-    expect(screen.getByText('Session ready')).toBeInTheDocument()
-    expect(screen.getByText(/Current index:/)).toHaveTextContent('Current index: 0')
+    expect(screen.getByText('Practice the current STAR answer')).toBeInTheDocument()
+    expect(screen.getByText('Tell me about yourself')).toBeInTheDocument()
   })
 
   it('blocks session start when the question block is invalid', async () => {

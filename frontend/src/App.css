@@ -48,7 +48,11 @@
 
 .editor-panel,
 .preview-panel,
-.session-state {
+.session-state,
+.question-panel,
+.timer-panel,
+.answer-form-panel,
+.answer-preview-panel {
   background: rgba(15, 23, 42, 0.72);
   border: 1px solid rgba(148, 163, 184, 0.16);
   border-radius: 20px;
@@ -124,7 +128,11 @@
 
 .panel-header span,
 .helper-copy,
-.session-state p {
+.session-state p,
+.field-helper,
+.timer-copy,
+.answer-preview-item p,
+.question-summary span {
   color: #cbd5e1;
 }
 
@@ -141,6 +149,10 @@
   color: #fda4af;
 }
 
+.field-helper {
+  font-size: 0.9rem;
+}
+
 .session-state {
   margin-top: 1.5rem;
   display: grid;
@@ -148,8 +160,220 @@
   text-align: left;
 }
 
+.practice-layout {
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+.practice-card {
+  width: min(1240px, 100%);
+  margin: 0 auto;
+  display: grid;
+  gap: 1.5rem;
+}
+
+.practice-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.question-summary {
+  min-width: 180px;
+  display: grid;
+  gap: 0.35rem;
+  padding: 1rem 1.15rem;
+  border-radius: 18px;
+  background: rgba(15, 23, 42, 0.72);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+.question-summary strong {
+  font-size: 1.9rem;
+}
+
+.question-panel {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.question-label {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.78rem;
+  color: #38bdf8;
+}
+
+.question-text {
+  margin: 0;
+  font-size: clamp(1.2rem, 3vw, 1.8rem);
+  color: #f8fafc;
+}
+
+.practice-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.practice-main-column {
+  display: grid;
+  gap: 1rem;
+}
+
+.timer-panel {
+  display: grid;
+  gap: 1rem;
+}
+
+.timer-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.timer-header h2 {
+  margin: 0.25rem 0 0;
+  font-size: 1.35rem;
+}
+
+.timer-status {
+  border-radius: 999px;
+  padding: 0.45rem 0.8rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.timer-status-idle {
+  background: rgba(148, 163, 184, 0.16);
+  color: #e2e8f0;
+}
+
+.timer-status-countdown {
+  background: rgba(56, 189, 248, 0.18);
+  color: #67e8f9;
+}
+
+.timer-status-overtime {
+  background: rgba(248, 113, 113, 0.16);
+  color: #fca5a5;
+}
+
+.timer-status-completed {
+  background: rgba(74, 222, 128, 0.14);
+  color: #86efac;
+}
+
+.timer-value {
+  font-size: clamp(2.8rem, 10vw, 4.5rem);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.timer-copy {
+  margin: 0;
+}
+
+.timer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.primary-button:disabled,
+.secondary-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.secondary-button {
+  width: fit-content;
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  border-radius: 999px;
+  padding: 0.9rem 1.4rem;
+  background: transparent;
+  color: #e2e8f0;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.overtime-alert {
+  border-radius: 18px;
+  padding: 1rem 1.1rem;
+  background: rgba(248, 113, 113, 0.14);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  color: #fecaca;
+}
+
+.star-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.star-textarea {
+  width: 100%;
+  min-height: 148px;
+  resize: vertical;
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  border-radius: 14px;
+  background: rgba(15, 23, 42, 0.6);
+  color: #f8fafc;
+  padding: 0.95rem 1rem;
+}
+
+.answer-preview-panel {
+  display: grid;
+  gap: 1rem;
+}
+
+.answer-preview-list {
+  margin: 0;
+  padding-left: 1.4rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.answer-preview-item h3 {
+  margin: 0 0 0.35rem;
+  font-size: 1rem;
+}
+
+.answer-preview-item p {
+  margin: 0;
+}
+
 @media (max-width: 900px) {
   .setup-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .practice-header,
+  .practice-grid {
+    grid-template-columns: 1fr;
+    display: grid;
+  }
+
+  .question-summary {
+    min-width: unset;
+  }
+}
+
+@media (max-width: 720px) {
+  .practice-layout,
+  .setup-layout {
+    padding: 1rem;
+  }
+
+  .setup-card {
+    padding: 1.25rem;
+  }
+
+  .star-grid {
     grid-template-columns: 1fr;
   }
 }

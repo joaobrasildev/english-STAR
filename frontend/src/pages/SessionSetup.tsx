@@ -1,4 +1,3 @@
-import type { PreparedSession } from '../types/session'
 import { QuestionParser } from '../components/QuestionParser'
 import { QuestionPreview } from '../components/QuestionPreview'
 
@@ -7,7 +6,6 @@ type SessionSetupProps = {
   targetSecondsInput: string
   parsedQuestions: string[]
   errorMessage: string
-  preparedSession: PreparedSession | null
   onQuestionBlockChange: (value: string) => void
   onTargetSecondsChange: (value: string) => void
   onStartSession: () => void
@@ -18,7 +16,6 @@ export function SessionSetup({
   targetSecondsInput,
   parsedQuestions,
   errorMessage,
-  preparedSession,
   onQuestionBlockChange,
   onTargetSecondsChange,
   onStartSession,
@@ -63,21 +60,6 @@ export function SessionSetup({
 
           <QuestionPreview questions={parsedQuestions} />
         </div>
-
-        {preparedSession ? (
-          <section className="session-state" aria-live="polite">
-            <h2>Session ready</h2>
-            <p>
-              Current index: <strong>{preparedSession.currentIndex}</strong>
-            </p>
-            <p>
-              Questions loaded: <strong>{preparedSession.parsedQuestions.length}</strong>
-            </p>
-            <p>
-              Target time: <strong>{preparedSession.targetSeconds} seconds</strong>
-            </p>
-          </section>
-        ) : null}
       </section>
     </main>
   )
