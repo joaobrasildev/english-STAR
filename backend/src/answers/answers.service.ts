@@ -4,19 +4,24 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
+import { SessionsService } from '../sessions/sessions.service';
 import type { CreateAnswerDto } from './dto/create-answer.dto';
 import { AnswersRepository } from './answers.repository';
 import type { AnswerRecord, SessionSummary } from './answers.types';
 
 @Injectable()
 export class AnswersService {
-  constructor(private readonly answersRepository: AnswersRepository) {}
+  constructor(
+    private readonly answersRepository: AnswersRepository,
+    private readonly sessionsService: SessionsService,
+  ) {}
 
   async createAnswer(input: CreateAnswerDto): Promise<AnswerRecord> {
-    this.validateInput(input);
+    const normalizedInput = this.validateInput(input);
+    await this.sessionsService.ensureActiveSession(normalizedInput.sessionId);
 
     try {
-      return await this.answersRepository.createAnswer(input);
+      return await this.answersRepository.createAnswer(normalizedInput);
     } catch (error: unknown) {
       throw new InternalServerErrorException(
         `Failed to persist answer record: ${this.describeError(error)}`,
@@ -70,14 +75,20 @@ export class AnswersService {
     return answers;
   }
 
-  private validateInput(input: CreateAnswerDto): void {
-    if (!input.sessionId?.trim()) {
+  private validateInput(input: CreateAnswerDto): CreateAnswerDto {
+    const normalizedSessionId = input.sessionId?.trim();
+    if (!normalizedSessionId) {
       throw new BadRequestException('sessionId is required.');
     }
 
     if (input.elapsedSeconds < 0) {
       throw new BadRequestException('elapsedSeconds must be zero or greater.');
     }
+
+    return {
+      ...input,
+      sessionId: normalizedSessionId,
+    };
   }
 
   private describeError(error: unknown): string {

@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
 import type { CreateSessionDto } from './dto/create-session.dto';
 import { SessionsRepository } from './sessions.repository';
@@ -21,6 +22,28 @@ export class SessionsService {
         `Failed to persist practice session: ${this.describeError(error)}`,
       );
     }
+  }
+
+  async ensureActiveSession(sessionId: string): Promise<PracticeSessionRecord> {
+    const normalizedSessionId = sessionId.trim();
+    if (!normalizedSessionId) {
+      throw new BadRequestException('sessionId is required.');
+    }
+
+    const session = await this.readSession(normalizedSessionId);
+    if (!session) {
+      throw new NotFoundException(
+        `Session "${normalizedSessionId}" was not found.`,
+      );
+    }
+
+    if (session.status !== 'active') {
+      throw new BadRequestException(
+        `Session "${normalizedSessionId}" is not active.`,
+      );
+    }
+
+    return session;
   }
 
   private validateInput(input: CreateSessionDto): void {
@@ -47,5 +70,17 @@ export class SessionsService {
 
   private describeError(error: unknown): string {
     return error instanceof Error ? error.message : 'Unknown database error';
+  }
+
+  private async readSession(
+    sessionId: string,
+  ): Promise<PracticeSessionRecord | null> {
+    try {
+      return await this.sessionsRepository.findSessionById(sessionId);
+    } catch (error: unknown) {
+      throw new InternalServerErrorException(
+        `Failed to read practice session: ${this.describeError(error)}`,
+      );
+    }
   }
 }

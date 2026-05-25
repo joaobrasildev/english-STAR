@@ -65,4 +65,37 @@ describe('SessionsRepository', () => {
       updatedAt: '2026-05-25T18:00:00.000Z',
     });
   });
+
+  it('finds a persisted session by id', async () => {
+    query.mockResolvedValueOnce({
+      recordset: [
+        {
+          sessionId: 'session-lookup-1',
+          rawQuestionBlock: '1. Tell me about yourself',
+          parsedQuestions: JSON.stringify(['Tell me about yourself']),
+          targetSeconds: 120,
+          status: 'active',
+          createdAt: new Date('2026-05-25T18:00:00.000Z'),
+          updatedAt: new Date('2026-05-25T18:00:00.000Z'),
+        },
+      ],
+    } as IResult<unknown>);
+
+    await expect(
+      repository.findSessionById('session-lookup-1'),
+    ).resolves.toEqual({
+      sessionId: 'session-lookup-1',
+      rawQuestionBlock: '1. Tell me about yourself',
+      parsedQuestions: ['Tell me about yourself'],
+      targetSeconds: 120,
+      status: 'active',
+      createdAt: '2026-05-25T18:00:00.000Z',
+      updatedAt: '2026-05-25T18:00:00.000Z',
+    });
+    expect(input).toHaveBeenCalledWith(
+      'sessionId',
+      expect.anything(),
+      'session-lookup-1',
+    );
+  });
 });

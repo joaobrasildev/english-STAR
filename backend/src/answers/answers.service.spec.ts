@@ -25,12 +25,15 @@ describe('AnswersService', () => {
     listAnswers: jest.fn(),
     listAnswersBySession: jest.fn(),
   };
+  const sessionsService = {
+    ensureActiveSession: jest.fn(),
+  };
 
   let service: AnswersService;
 
   beforeEach(() => {
     jest.resetAllMocks();
-    service = new AnswersService(repository);
+    service = new AnswersService(repository, sessionsService);
   });
 
   it('returns a descriptive error when sessionId is missing', async () => {
@@ -44,6 +47,8 @@ describe('AnswersService', () => {
         elapsedSeconds: 10,
       }),
     ).rejects.toThrow(new BadRequestException('sessionId is required.'));
+    expect(sessionsService.ensureActiveSession).not.toHaveBeenCalled();
+    expect(repository.createAnswer).not.toHaveBeenCalled();
   });
 
   it('rejects negative elapsedSeconds values', async () => {
@@ -59,6 +64,81 @@ describe('AnswersService', () => {
     ).rejects.toThrow(
       new BadRequestException('elapsedSeconds must be zero or greater.'),
     );
+    expect(sessionsService.ensureActiveSession).not.toHaveBeenCalled();
+    expect(repository.createAnswer).not.toHaveBeenCalled();
+  });
+
+  it('persists answers only for active persisted sessions', async () => {
+    sessionsService.ensureActiveSession.mockResolvedValue({
+      sessionId: 'session-1',
+      status: 'active',
+    });
+    repository.createAnswer.mockResolvedValue(makeAnswer());
+
+    await expect(
+      service.createAnswer({
+        sessionId: ' session-1 ',
+        questionOrder: 1,
+        questionText: 'Question line 1\nQuestion line 2',
+        fullAnswer: 'Answer',
+        targetSeconds: 60,
+        elapsedSeconds: 10,
+      }),
+    ).resolves.toEqual(makeAnswer());
+
+    expect(sessionsService.ensureActiveSession).toHaveBeenCalledWith(
+      'session-1',
+    );
+    expect(repository.createAnswer).toHaveBeenCalledWith({
+      sessionId: 'session-1',
+      questionOrder: 1,
+      questionText: 'Question line 1\nQuestion line 2',
+      fullAnswer: 'Answer',
+      targetSeconds: 60,
+      elapsedSeconds: 10,
+    });
+  });
+
+  it('rejects answers for unknown sessions before persisting', async () => {
+    sessionsService.ensureActiveSession.mockRejectedValue(
+      new NotFoundException('Session "missing-session" was not found.'),
+    );
+
+    await expect(
+      service.createAnswer({
+        sessionId: 'missing-session',
+        questionOrder: 1,
+        questionText: 'Question line 1\nQuestion line 2',
+        fullAnswer: 'Answer',
+        targetSeconds: 60,
+        elapsedSeconds: 10,
+      }),
+    ).rejects.toThrow(
+      new NotFoundException('Session "missing-session" was not found.'),
+    );
+
+    expect(repository.createAnswer).not.toHaveBeenCalled();
+  });
+
+  it('rejects answers for inactive sessions before persisting', async () => {
+    sessionsService.ensureActiveSession.mockRejectedValue(
+      new BadRequestException('Session "session-1" is not active.'),
+    );
+
+    await expect(
+      service.createAnswer({
+        sessionId: 'session-1',
+        questionOrder: 1,
+        questionText: 'Question line 1\nQuestion line 2',
+        fullAnswer: 'Answer',
+        targetSeconds: 60,
+        elapsedSeconds: 10,
+      }),
+    ).rejects.toThrow(
+      new BadRequestException('Session "session-1" is not active.'),
+    );
+
+    expect(repository.createAnswer).not.toHaveBeenCalled();
   });
 
   it('returns grouped totals by sessionId', async () => {
@@ -102,6 +182,10 @@ describe('AnswersService', () => {
   });
 
   it('wraps persistence errors with explicit backend context', async () => {
+    sessionsService.ensureActiveSession.mockResolvedValue({
+      sessionId: 'session-1',
+      status: 'active',
+    });
     repository.createAnswer.mockRejectedValue(new Error('insert failed'));
 
     await expect(

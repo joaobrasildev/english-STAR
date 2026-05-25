@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "Validar sessões persistidas no pipeline de answers"
 type: backend
 complexity: medium
@@ -29,10 +29,10 @@ Esta task conecta o pipeline de `POST /answers` à nova entidade de sessão pers
 </requirements>
 
 ## Subtasks
-- [ ] 2.1 Integrar o serviço de answers à nova fonte de verdade de sessões persistidas.
-- [ ] 2.2 Reforçar o contrato de `POST /answers` para recusar `sessionId` inexistente ou inativo com erro explícito.
-- [ ] 2.3 Preservar o comportamento atual dos endpoints de histórico e listagem de respostas.
-- [ ] 2.4 Atualizar testes unitários e e2e do backend para o novo comportamento de validação de sessão.
+- [x] 2.1 Integrar o serviço de answers à nova fonte de verdade de sessões persistidas.
+- [x] 2.2 Reforçar o contrato de `POST /answers` para recusar `sessionId` inexistente ou inativo com erro explícito.
+- [x] 2.3 Preservar o comportamento atual dos endpoints de histórico e listagem de respostas.
+- [x] 2.4 Atualizar testes unitários e e2e do backend para o novo comportamento de validação de sessão.
 
 ## Implementation Details
 Seguir o TechSpec "API Endpoints", "Impact Analysis", "Testing Approach" e "Key Decisions". Esta task deve concentrar a validação autoritativa de sessão no backend, sem migrar a leitura de histórico para a tabela de sessões.
@@ -66,13 +66,13 @@ Seguir o TechSpec "API Endpoints", "Impact Analysis", "Testing Approach" e "Key 
 
 ## Tests
 - Unit tests:
-  - [ ] Validar que `createAnswer` aceita payload com `sessionId` de sessão ativa.
-  - [ ] Validar que `createAnswer` rejeita `sessionId` vazio antes de consultar o repository.
-  - [ ] Validar que `createAnswer` rejeita sessão inexistente ou inativa com erro explícito.
+  - [x] Validar que `createAnswer` aceita payload com `sessionId` de sessão ativa.
+  - [x] Validar que `createAnswer` rejeita `sessionId` vazio antes de consultar o repository.
+  - [x] Validar que `createAnswer` rejeita sessão inexistente ou inativa com erro explícito.
 - Integration tests:
-  - [ ] `POST /answers` com sessão criada previamente persiste a answer e retorna `201`.
-  - [ ] `POST /answers` com `sessionId` inexistente retorna erro sem gravar answer.
-  - [ ] `GET /sessions` continua listando histórico derivado de answers sem regressão de contrato.
+  - [x] `POST /answers` com sessão criada previamente persiste a answer e retorna `201`.
+  - [x] `POST /answers` com `sessionId` inexistente retorna erro sem gravar answer.
+  - [x] `GET /sessions` continua listando histórico derivado de answers sem regressão de contrato.
 - Test coverage target: >=80%
 - All tests must pass
 

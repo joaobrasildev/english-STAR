@@ -61,6 +61,33 @@ export class SessionsRepository {
     return this.mapRecord(result.recordset[0]);
   }
 
+  async findSessionById(
+    sessionId: string,
+  ): Promise<PracticeSessionRecord | null> {
+    await this.ensureSchema();
+
+    const result = await this.pool
+      .request()
+      .input('sessionId', NVarChar(64), sessionId).query<PracticeSessionRow>(`
+        SELECT
+          CONVERT(NVARCHAR(36), id) AS sessionId,
+          raw_question_block AS rawQuestionBlock,
+          parsed_questions AS parsedQuestions,
+          target_seconds AS targetSeconds,
+          status AS status,
+          created_at AS createdAt,
+          updated_at AS updatedAt
+        FROM dbo.practice_sessions
+        WHERE CONVERT(NVARCHAR(36), id) = @sessionId;
+      `);
+
+    if (result.recordset.length === 0) {
+      return null;
+    }
+
+    return this.mapRecord(result.recordset[0]);
+  }
+
   private async ensureSchema(): Promise<void> {
     if (this.schemaReady) {
       return;

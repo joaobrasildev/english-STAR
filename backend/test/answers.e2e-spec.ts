@@ -52,14 +52,8 @@ describe('Answers endpoints (e2e)', () => {
   });
 
   beforeEach(async () => {
-    await pool
-      .request()
-      .query("DELETE FROM dbo.answer_records WHERE session_id LIKE 'e2e-%';");
-    await pool
-      .request()
-      .query(
-        "DELETE FROM dbo.practice_sessions WHERE raw_question_block LIKE 'e2e-%';",
-      );
+    await pool.request().query('DELETE FROM dbo.answer_records;');
+    await pool.request().query('DELETE FROM dbo.practice_sessions;');
   });
 
   afterAll(async () => {
@@ -106,8 +100,21 @@ describe('Answers endpoints (e2e)', () => {
   });
 
   it('POST /answers persists a valid answer and GET endpoints read it back', async () => {
+    const createSessionResponse = await request(app.getHttpServer())
+      .post('/sessions')
+      .send({
+        rawQuestionBlock:
+          'e2e-1. Tell me about yourself\n2. Describe a challenge you solved',
+        parsedQuestions: [
+          'Tell me about yourself',
+          'Describe a challenge you solved',
+        ],
+        targetSeconds: 120,
+      })
+      .expect(201);
+
     const payload = {
-      sessionId: 'e2e-session-1',
+      sessionId: createSessionResponse.body.sessionId as string,
       questionOrder: 1,
       questionText:
         'Tell me about a challenge you solved.\nFocus on the turning point.',
@@ -122,7 +129,7 @@ describe('Answers endpoints (e2e)', () => {
       .expect(201);
 
     expect(createResponse.body).toMatchObject({
-      sessionId: 'e2e-session-1',
+      sessionId: payload.sessionId,
       questionOrder: 1,
       targetSeconds: 120,
       elapsedSeconds: 145,
@@ -133,23 +140,49 @@ describe('Answers endpoints (e2e)', () => {
       .expect(200);
     expect(sessionsResponse.body).toEqual([
       expect.objectContaining({
-        sessionId: 'e2e-session-1',
+        sessionId: payload.sessionId,
         answeredCount: 1,
         totalElapsedSeconds: 145,
       }),
     ]);
 
     const answersResponse = await request(app.getHttpServer())
-      .get('/sessions/e2e-session-1/answers')
+      .get(`/sessions/${payload.sessionId}/answers`)
       .expect(200);
 
     expect(answersResponse.body).toEqual([
       expect.objectContaining({
-        sessionId: 'e2e-session-1',
+        sessionId: payload.sessionId,
         questionOrder: 1,
         questionText: payload.questionText,
       }),
     ]);
+  });
+
+  it('POST /answers rejects unknown sessions without persisting records', async () => {
+    const missingSessionId = 'e2e-missing-session';
+
+    await request(app.getHttpServer())
+      .post('/answers')
+      .send({
+        sessionId: missingSessionId,
+        questionOrder: 1,
+        questionText: 'Question',
+        fullAnswer: 'Answer',
+        targetSeconds: 90,
+        elapsedSeconds: 30,
+      })
+      .expect(404);
+
+    const persistedCount = await pool
+      .request()
+      .input('sessionId', missingSessionId).query<{ total: number }>(`
+        SELECT COUNT(*) AS total
+        FROM dbo.answer_records
+        WHERE session_id = @sessionId;
+      `);
+
+    expect(persistedCount.recordset[0]?.total).toBe(0);
   });
 
   it('POST /answers rejects invalid payloads', async () => {
