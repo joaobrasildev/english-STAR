@@ -11,24 +11,33 @@ vi.mock('./utils/playOvertimeAlert', () => ({
   playOvertimeAlert: vi.fn(),
 }))
 
-vi.mock('./services/api', () => ({
-  createAnswer: (...args: unknown[]) => createAnswer(...args),
-  listSessions: (...args: unknown[]) => listSessions(...args),
-  listAnswersBySession: (...args: unknown[]) => listAnswersBySession(...args),
-}))
+vi.mock('./services/api', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('./services/api')>()
+
+  return {
+    ...actual,
+    createAnswer: (...args: unknown[]) => createAnswer(...args),
+    listSessions: (...args: unknown[]) => listSessions(...args),
+    listAnswersBySession: (...args: unknown[]) => listAnswersBySession(...args),
+  }
+})
 
 describe('Session review flow', () => {
   afterEach(() => {
     createAnswer.mockReset()
     listSessions.mockReset()
     listAnswersBySession.mockReset()
+    vi.restoreAllMocks()
   })
 
   it('shows the final summary with the saved answer timings after a session is completed', async () => {
     const user = userEvent.setup()
+    vi.spyOn(globalThis.crypto, 'randomUUID').mockReturnValue(
+      '11111111-1111-1111-1111-111111111111',
+    )
     createAnswer.mockResolvedValue({
       id: 'answer-1',
-      sessionId: 'session-1',
+      sessionId: 'server-session-1',
       questionOrder: 1,
       questionText: 'Tell me about yourself\nFocus on the most recent role.',
       fullAnswer: 'Answer',
@@ -50,6 +59,7 @@ describe('Session review flow', () => {
     await user.click(screen.getByRole('button', { name: 'Confirm and save' }))
 
     expect(await screen.findByText('Review the timing for this session')).toBeInTheDocument()
+    expect(screen.getByText('11111111-1111-1111-1111-111111111111')).toBeInTheDocument()
     expect(
       screen.getByText((_, element) => {
         return (

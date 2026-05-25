@@ -7,8 +7,9 @@ import type { App } from 'supertest/types';
 import { ConnectionPool } from 'mssql';
 import { loadSqlServerConfig } from '../src/config/env';
 import { AppModule } from '../src/app.module';
-import { ANSWERS_DB_POOL } from '../src/answers/answers.repository';
 import { ANSWER_RECORDS_SCHEMA_SQL } from '../src/answers/answer-records.schema';
+import { SQLSERVER_DB_POOL } from '../src/database/sqlserver.module';
+import { PRACTICE_SESSIONS_SCHEMA_SQL } from '../src/sessions/session-records.schema';
 
 describe('Answers endpoints (e2e)', () => {
   let app: INestApplication<App>;
@@ -34,6 +35,7 @@ describe('Answers endpoints (e2e)', () => {
     }).connect();
 
     await pool.request().batch(ANSWER_RECORDS_SCHEMA_SQL);
+    await pool.request().batch(PRACTICE_SESSIONS_SCHEMA_SQL);
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
@@ -53,13 +55,54 @@ describe('Answers endpoints (e2e)', () => {
     await pool
       .request()
       .query("DELETE FROM dbo.answer_records WHERE session_id LIKE 'e2e-%';");
+    await pool
+      .request()
+      .query(
+        "DELETE FROM dbo.practice_sessions WHERE raw_question_block LIKE 'e2e-%';",
+      );
   });
 
   afterAll(async () => {
-    const appPool = app.get<ConnectionPool>(ANSWERS_DB_POOL);
+    const appPool = app.get<ConnectionPool>(SQLSERVER_DB_POOL);
     await appPool.close();
     await app.close();
     await pool.close();
+  });
+
+  it('POST /sessions persists a valid practice session', async () => {
+    const payload = {
+      rawQuestionBlock:
+        'e2e-1. Tell me about yourself\n2. Describe a challenge you solved',
+      parsedQuestions: [
+        'Tell me about yourself',
+        'Describe a challenge you solved',
+      ],
+      targetSeconds: 120,
+    };
+
+    const response = await request(app.getHttpServer())
+      .post('/sessions')
+      .send(payload)
+      .expect(201);
+
+    expect(response.body).toMatchObject({
+      rawQuestionBlock: payload.rawQuestionBlock,
+      parsedQuestions: payload.parsedQuestions,
+      targetSeconds: 120,
+      status: 'active',
+    });
+    expect(response.body.sessionId).toEqual(expect.any(String));
+  });
+
+  it('POST /sessions rejects invalid payloads', async () => {
+    await request(app.getHttpServer())
+      .post('/sessions')
+      .send({
+        rawQuestionBlock: '1. Tell me about yourself',
+        parsedQuestions: [],
+        targetSeconds: 0,
+      })
+      .expect(400);
   });
 
   it('POST /answers persists a valid answer and GET endpoints read it back', async () => {

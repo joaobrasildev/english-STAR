@@ -1,11 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-argument */
 import { Inject, Injectable } from '@nestjs/common';
 import { ConnectionPool, Int, MAX, NVarChar } from 'mssql';
+import { SQLSERVER_DB_POOL } from '../database/sqlserver.module';
 import { ANSWER_RECORDS_SCHEMA_SQL } from './answer-records.schema';
 import type { CreateAnswerDto } from './dto/create-answer.dto';
 import type { AnswerRecord } from './answers.types';
-
-export const ANSWERS_DB_POOL = 'ANSWERS_DB_POOL';
 
 type AnswerRow = {
   id: string;
@@ -24,7 +23,7 @@ export class AnswersRepository {
   private schemaReady = false;
 
   constructor(
-    @Inject(ANSWERS_DB_POOL)
+    @Inject(SQLSERVER_DB_POOL)
     private readonly pool: ConnectionPool,
   ) {}
 

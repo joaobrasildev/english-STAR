@@ -16,9 +16,14 @@ vi.mock('../utils/playOvertimeAlert', () => ({
   playOvertimeAlert: vi.fn(),
 }))
 
-vi.mock('../services/api', () => ({
-  createAnswer: (...args: unknown[]) => createAnswer(...args),
-}))
+vi.mock('../services/api', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../services/api')>()
+
+  return {
+    ...actual,
+    createAnswer: (...args: unknown[]) => createAnswer(...args),
+  }
+})
 
 function createSession(targetSeconds = 2): PreparedSession {
   return {
@@ -223,6 +228,34 @@ describe('Practice session flow', () => {
     expect(screen.getByRole('textbox', { name: /Situation \(S\)/ })).toHaveValue(
       'Keep this draft',
     )
+  })
+
+  it('blocks a local save with invalid sessionId without sending POST and keeps retry available', async () => {
+    render(
+      <PracticeSession
+        session={{
+          ...createSession(),
+          sessionId: '   ',
+        }}
+      />,
+    )
+
+    fireEvent.change(screen.getByRole('textbox', { name: /Situation \(S\)/ }), {
+      target: { value: 'Keep this draft' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Start question' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Mark question as complete' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Confirm and save' }))
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Failed to save the answer. Please try again.',
+    )
+    expect(createAnswer).not.toHaveBeenCalled()
+    expect(screen.getByText('Tell me about yourself')).toBeInTheDocument()
+    expect(screen.getByRole('textbox', { name: /Situation \(S\)/ })).toHaveValue(
+      'Keep this draft',
+    )
+    expect(screen.getByRole('button', { name: 'Confirm and save' })).toBeInTheDocument()
   })
 
   it('saves the last question without trying to advance beyond the session', async () => {

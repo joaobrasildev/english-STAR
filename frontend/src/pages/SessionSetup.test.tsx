@@ -81,4 +81,30 @@ describe('Session setup flow', () => {
     ).toBeInTheDocument()
     expect(screen.queryByText('Session ready')).not.toBeInTheDocument()
   })
+
+  it('renders session controls separately from the preview area without moving the main actions', async () => {
+    const user = userEvent.setup()
+    const { container } = render(<App />)
+
+    await user.type(
+      screen.getByLabelText('Questions'),
+      '1. Tell me about yourself\n2. Describe a challenge you solved',
+    )
+
+    const controlsPanel = container.querySelector('.setup-controls-panel')
+    const previewColumn = container.querySelector('.setup-preview-column')
+    const previewPanel = previewColumn?.querySelector('.preview-panel')
+    const previewList = previewPanel?.querySelector('.preview-list')
+
+    expect(controlsPanel).toContainElement(screen.getByLabelText('Target time (seconds)'))
+    expect(controlsPanel).toContainElement(
+      screen.getByRole('button', { name: 'Start session' }),
+    )
+    expect(controlsPanel).toContainElement(
+      screen.getByRole('button', { name: 'View history' }),
+    )
+    expect(previewPanel).toContainElement(screen.getByRole('heading', { name: 'Question preview' }))
+    expect(previewList).toBeInTheDocument()
+    expect(previewList?.children).toHaveLength(2)
+  })
 })

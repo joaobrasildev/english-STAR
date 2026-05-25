@@ -44,6 +44,24 @@ describe('api service', () => {
     )
   })
 
+  it('rejects an invalid sessionId before sending POST /answers', async () => {
+    const fetchMock = vi.fn()
+    vi.stubGlobal('fetch', fetchMock)
+
+    await expect(
+      createAnswer({
+        sessionId: '   ',
+        questionOrder: 1,
+        questionText: 'Question line 1\nQuestion line 2',
+        fullAnswer: 'Answer',
+        targetSeconds: 90,
+        elapsedSeconds: 95,
+      }),
+    ).rejects.toThrow('Failed to save the answer. Please try again.')
+
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
+
   it('loads the saved session summaries', async () => {
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import './App.css'
 import { useSessionSetup } from './hooks/useSessionSetup'
-import type { AnswerRecord } from './services/api'
+import { assertValidSessionId, type AnswerRecord } from './services/api'
 import { History } from './pages/History'
 import { PracticeSession } from './pages/PracticeSession'
 import { SessionSetup } from './pages/SessionSetup'
@@ -18,6 +18,7 @@ export function App() {
   const sessionSetup = useSessionSetup()
   const [screen, setScreen] = useState<AppScreen>('setup')
   const [completedSession, setCompletedSession] = useState<CompletedSession | null>(null)
+  const preparedSession = sessionSetup.preparedSession
 
   if (screen === 'history') {
     return (
@@ -43,13 +44,13 @@ export function App() {
     )
   }
 
-  if (sessionSetup.preparedSession) {
+  if (preparedSession) {
     return (
       <PracticeSession
-        session={sessionSetup.preparedSession}
+        session={preparedSession}
         onSessionComplete={(answers) => {
           setCompletedSession({
-            sessionId: sessionSetup.preparedSession?.sessionId ?? answers[0]?.sessionId ?? '',
+            sessionId: assertValidSessionId(preparedSession.sessionId),
             answers,
           })
           sessionSetup.resetSession()

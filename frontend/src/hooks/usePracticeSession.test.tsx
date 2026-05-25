@@ -100,4 +100,37 @@ describe('usePracticeSession', () => {
     expect(result.current.saveError).toBe('API unavailable')
     expect(result.current.currentIndex).toBe(0)
   })
+
+  it('fails fast when the sessionId is invalid and keeps the draft ready for retry', async () => {
+    const saveAnswer = vi.fn()
+    const { result } = renderHook(() =>
+      usePracticeSession(
+        {
+          ...createSession(),
+          sessionId: '   ',
+        },
+        { saveAnswer },
+      ),
+    )
+
+    act(() => {
+      result.current.startQuestion()
+      result.current.updateAnswerField('s', 'Current answer still here')
+      result.current.requestFinishConfirmation()
+    })
+
+    await act(async () => {
+      await result.current.confirmFinishQuestion()
+    })
+
+    expect(saveAnswer).not.toHaveBeenCalled()
+    expect(result.current.currentQuestion).toBe(
+      'Tell me about yourself\nFocus on the most recent role.',
+    )
+    expect(result.current.currentAnswer.s).toBe('Current answer still here')
+    expect(result.current.saveError).toBe('Failed to save the answer. Please try again.')
+    expect(result.current.currentIndex).toBe(0)
+    expect(result.current.isAwaitingFinishConfirmation).toBe(true)
+    expect(result.current.isSavingAnswer).toBe(false)
+  })
 })

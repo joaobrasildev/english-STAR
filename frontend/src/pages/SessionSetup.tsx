@@ -35,7 +35,7 @@ export function SessionSetup({
         </div>
 
         <div className="setup-grid">
-          <section className="editor-panel">
+          <section className="editor-panel setup-controls-panel" aria-label="Session controls">
             <QuestionParser
               value={rawQuestionBlock}
               onChange={onQuestionBlockChange}
@@ -65,7 +65,9 @@ export function SessionSetup({
             </div>
           </section>
 
-          <QuestionPreview questions={parsedQuestions} />
+          <div className="setup-preview-column">
+            <QuestionPreview questions={parsedQuestions} />
+          </div>
         </div>
       </section>
     </main>

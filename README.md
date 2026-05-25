@@ -9,6 +9,12 @@ Bootstrap inicial do monorepo do **English STAR Speed Trainer**.
 - `docker-compose.yml` — SQL Server local para desenvolvimento
 - `.compozy/tasks/english-star-trainer/` — PRD, TechSpec, ADRs e tasks
 
+## Convenções de documentação e interação
+
+- Interações de trabalho no projeto devem ocorrer em português.
+- Artefatos markdown do projeto, incluindo PRDs, TechSpecs, ADRs e tasks, devem ser escritos em português.
+- Apenas o conteúdo da aplicação voltado ao usuário final deve permanecer em inglês.
+
 ## Pré-requisitos
 
 - Node.js 20+

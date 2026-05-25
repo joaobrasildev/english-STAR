@@ -64,6 +64,11 @@
   gap: 1rem;
 }
 
+.setup-controls-panel,
+.setup-preview-column {
+  align-self: start;
+}
+
 .setup-actions {
   display: flex;
   flex-wrap: wrap;
@@ -117,6 +122,22 @@
 
 .preview-panel {
   text-align: left;
+}
+
+.setup-preview-column .preview-panel {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.setup-preview-column .preview-list,
+.setup-preview-column .helper-copy {
+  margin-top: 1rem;
+}
+
+.setup-preview-column .preview-list {
+  max-height: min(26rem, 60vh);
+  overflow-y: auto;
+  padding-right: 0.35rem;
 }
 
 .panel-header {
@@ -489,6 +510,10 @@
 @media (max-width: 900px) {
   .setup-grid {
     grid-template-columns: 1fr;
+  }
+
+  .setup-preview-column .preview-list {
+    max-height: min(20rem, 50vh);
   }
 
   .practice-header,

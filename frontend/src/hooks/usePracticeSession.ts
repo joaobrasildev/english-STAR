@@ -1,5 +1,11 @@
 import { useEffect, useMemo, useReducer } from 'react'
-import { createAnswer, type AnswerRecord, type CreateAnswerPayload } from '../services/api'
+import {
+  assertValidSessionId,
+  createAnswer,
+  SAVE_ANSWER_RETRY_MESSAGE,
+  type AnswerRecord,
+  type CreateAnswerPayload,
+} from '../services/api'
 import type { PreparedSession } from '../types/session'
 import {
   composeAnswer,
@@ -66,7 +72,7 @@ function buildCreateAnswerPayload(
   fullAnswer: string,
 ): CreateAnswerPayload {
   return {
-    sessionId: state.sessionId,
+    sessionId: assertValidSessionId(state.sessionId),
     questionOrder: state.currentIndex + 1,
     questionText: state.parsedQuestions[state.currentIndex] ?? '',
     fullAnswer,
@@ -136,12 +142,23 @@ export function usePracticeSession(
         return false
       }
 
+      let payload: CreateAnswerPayload
+
+      try {
+        payload = buildCreateAnswerPayload(state, composedAnswer)
+      } catch (error: unknown) {
+        dispatch({
+          type: 'fail-saving-answer',
+          errorMessage:
+            error instanceof Error ? error.message : SAVE_ANSWER_RETRY_MESSAGE,
+        })
+        return false
+      }
+
       dispatch({ type: 'start-saving-answer' })
 
       try {
-        const savedAnswer = await saveAnswer(
-          buildCreateAnswerPayload(state, composedAnswer),
-        )
+        const savedAnswer = await saveAnswer(payload)
 
         dispatch({ type: 'finish-saving-answer', savedAnswer })
         return true
@@ -151,7 +168,7 @@ export function usePracticeSession(
           errorMessage:
             error instanceof Error
               ? error.message
-              : 'Failed to save the answer. Please try again.',
+              : SAVE_ANSWER_RETRY_MESSAGE,
         })
         return false
       }

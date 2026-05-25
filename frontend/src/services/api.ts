@@ -28,6 +28,8 @@ export type SessionSummary = {
 }
 
 const DEFAULT_API_BASE_URL = 'http://localhost:3100'
+export const SAVE_ANSWER_RETRY_MESSAGE =
+  'Failed to save the answer. Please try again.'
 
 type ApiErrorResponse = {
   message?: string | string[]
@@ -51,9 +53,23 @@ function getErrorMessage(body: ApiErrorResponse, fallbackMessage: string): strin
   return fallbackMessage
 }
 
+export function assertValidSessionId(sessionId: string): string {
+  const normalizedSessionId = sessionId.trim()
+
+  if (normalizedSessionId.length === 0) {
+    throw new Error(SAVE_ANSWER_RETRY_MESSAGE)
+  }
+
+  return normalizedSessionId
+}
+
 export async function createAnswer(
   payload: CreateAnswerPayload,
 ): Promise<AnswerRecord> {
+  const validatedPayload = {
+    ...payload,
+    sessionId: assertValidSessionId(payload.sessionId),
+  }
   let response: Response
 
   try {
@@ -62,7 +78,7 @@ export async function createAnswer(
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(validatedPayload),
     })
   } catch {
     throw new Error('Failed to save the answer. Please check the backend connection.')
@@ -80,7 +96,7 @@ export async function createAnswer(
     throw new Error(
       getErrorMessage(
         errorBody ?? {},
-        'Failed to save the answer. Please try again.',
+        SAVE_ANSWER_RETRY_MESSAGE,
       ),
     )
   }
