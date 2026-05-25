@@ -52,6 +52,9 @@ describe('Practice session flow', () => {
 
     expect(screen.getByText('Tell me about yourself')).toBeInTheDocument()
     expect(
+      screen.getByRole('region', { name: 'Primary writing flow' }),
+    ).toContainElement(screen.getByRole('region', { name: 'STAR answer builder' }))
+    expect(
       screen.getByRole('textbox', { name: /Situation \(S\)/ }),
     ).toBeEnabled()
 
@@ -59,6 +62,44 @@ describe('Practice session flow', () => {
 
     expect(screen.getByText('Counting down')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Mark question as complete' })).toBeEnabled()
+  })
+
+  it('renders multiline questions and keeps support panels in the secondary section', () => {
+    render(
+      <PracticeSession
+        session={{
+          ...createSession(),
+          rawQuestionBlock:
+            '1. Tell me about yourself\nFocus on the most recent role.\n2. Describe a challenge you solved',
+          parsedQuestions: [
+            'Tell me about yourself\nFocus on the most recent role.',
+            'Describe a challenge you solved',
+          ],
+        }}
+      />,
+    )
+
+    const questionText = screen.getByText((_, element) => {
+      return (
+        element?.classList.contains('question-text') === true &&
+        element.textContent === 'Tell me about yourself\nFocus on the most recent role.'
+      )
+    })
+
+    expect(questionText).toHaveClass('question-text')
+
+    const primaryFlow = screen.getByRole('region', { name: 'Primary writing flow' })
+    const supportingPanels = screen.getByRole('region', { name: 'Supporting panels' })
+
+    expect(primaryFlow).toContainElement(
+      screen.getByRole('region', { name: 'STAR answer builder' }),
+    )
+    expect(supportingPanels).toContainElement(
+      screen.getByRole('region', { name: 'Time remaining' }),
+    )
+    expect(supportingPanels).toContainElement(
+      screen.getByRole('region', { name: 'Full answer preview' }),
+    )
   })
 
   it('shows the overtime alert and plays the sound only once when the target reaches zero', () => {

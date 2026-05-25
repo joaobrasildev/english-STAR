@@ -65,79 +65,83 @@ export function PracticeSession({ session, onSessionComplete }: PracticeSessionP
           <p className="question-text">{practiceSession.currentQuestion}</p>
         </section>
 
-        <div className="practice-grid">
-          <div className="practice-main-column">
-            <CountdownTimer
-              timerState={practiceSession.timerState}
-              targetSeconds={practiceSession.targetSeconds}
-              elapsedSeconds={practiceSession.elapsedSeconds}
-              remainingSeconds={practiceSession.remainingSeconds}
-              overtimeSeconds={practiceSession.overtimeSeconds}
-              disableStart={
-                practiceSession.isSavingAnswer || practiceSession.isSessionComplete
-              }
-              disableComplete={
-                practiceSession.isSavingAnswer || practiceSession.isSessionComplete
-              }
-              onStart={practiceSession.startQuestion}
-              onComplete={practiceSession.requestFinishConfirmation}
-            />
+        <section className="practice-main-column" aria-label="Primary writing flow">
+          <StarAnswerForm
+            answer={practiceSession.currentAnswer}
+            onChange={practiceSession.updateAnswerField}
+          />
+        </section>
 
-            {practiceSession.timerState === 'overtime' ? (
-              <OvertimeAlert overtimeSeconds={practiceSession.overtimeSeconds} />
-            ) : null}
-
-            {practiceSession.saveError ? (
-              <section className="save-error-banner" role="alert">
-                {practiceSession.saveError}
-              </section>
-            ) : null}
-
-            {practiceSession.isAwaitingFinishConfirmation ? (
-              <FinishConfirmation
-                isSaving={practiceSession.isSavingAnswer}
-                onCancel={practiceSession.cancelFinishConfirmation}
-                onConfirm={() => {
-                  void practiceSession.confirmFinishQuestion()
-                }}
+        <section className="practice-secondary-section" aria-label="Supporting panels">
+          <div className="practice-support-grid">
+            <div className="practice-support-column">
+              <CountdownTimer
+                timerState={practiceSession.timerState}
+                targetSeconds={practiceSession.targetSeconds}
+                elapsedSeconds={practiceSession.elapsedSeconds}
+                remainingSeconds={practiceSession.remainingSeconds}
+                overtimeSeconds={practiceSession.overtimeSeconds}
+                disableStart={
+                  practiceSession.isSavingAnswer || practiceSession.isSessionComplete
+                }
+                disableComplete={
+                  practiceSession.isSavingAnswer || practiceSession.isSessionComplete
+                }
+                onStart={practiceSession.startQuestion}
+                onComplete={practiceSession.requestFinishConfirmation}
               />
-            ) : null}
 
-            {practiceSession.isSessionComplete ? (
-              <section className="session-complete-banner" role="status">
-                Session complete. Your final answer was saved successfully.
-              </section>
-            ) : null}
+              {practiceSession.timerState === 'overtime' ? (
+                <OvertimeAlert overtimeSeconds={practiceSession.overtimeSeconds} />
+              ) : null}
 
-            <StarAnswerForm
-              answer={practiceSession.currentAnswer}
-              onChange={practiceSession.updateAnswerField}
-            />
-          </div>
+              {practiceSession.saveError ? (
+                <section className="save-error-banner" role="alert">
+                  {practiceSession.saveError}
+                </section>
+              ) : null}
 
-          <section
-            className="answer-preview-panel"
-            aria-labelledby="full-answer-preview-title"
-          >
-            <div className="panel-header">
-              <h2 id="full-answer-preview-title">Full answer preview</h2>
-              <span>{practiceSession.composedAnswer.length} characters</span>
+              {practiceSession.isAwaitingFinishConfirmation ? (
+                <FinishConfirmation
+                  isSaving={practiceSession.isSavingAnswer}
+                  onCancel={practiceSession.cancelFinishConfirmation}
+                  onConfirm={() => {
+                    void practiceSession.confirmFinishQuestion()
+                  }}
+                />
+              ) : null}
+
+              {practiceSession.isSessionComplete ? (
+                <section className="session-complete-banner" role="status">
+                  Session complete. Your final answer was saved successfully.
+                </section>
+              ) : null}
             </div>
 
-            <ol className="answer-preview-list">
-              {practiceSession.answerParagraphs.map((paragraph, index) => {
-                const fieldKey = STAR_FIELD_ORDER[index]
+            <section
+              className="answer-preview-panel"
+              aria-labelledby="full-answer-preview-title"
+            >
+              <div className="panel-header">
+                <h2 id="full-answer-preview-title">Full answer preview</h2>
+                <span>{practiceSession.composedAnswer.length} characters</span>
+              </div>
 
-                return (
-                  <li className="answer-preview-item" key={fieldKey}>
-                    <h3>{STAR_FIELD_LABELS[fieldKey]}</h3>
-                    <p>{paragraph || EMPTY_PARAGRAPH_COPY}</p>
-                  </li>
-                )
-              })}
-            </ol>
-          </section>
-        </div>
+              <ol className="answer-preview-list">
+                {practiceSession.answerParagraphs.map((paragraph, index) => {
+                  const fieldKey = STAR_FIELD_ORDER[index]
+
+                  return (
+                    <li className="answer-preview-item" key={fieldKey}>
+                      <h3>{STAR_FIELD_LABELS[fieldKey]}</h3>
+                      <p>{paragraph || EMPTY_PARAGRAPH_COPY}</p>
+                    </li>
+                  )
+                })}
+              </ol>
+            </section>
+          </div>
+        </section>
       </section>
     </main>
   )

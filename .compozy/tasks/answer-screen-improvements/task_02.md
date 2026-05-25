@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "Reorganizar a PracticeSession em layout orientado pela pergunta"
 type: frontend
 complexity: high
@@ -29,10 +29,10 @@ Esta task redesenha a hierarquia visual da `PracticeSession` para que a pergunta
 </requirements>
 
 ## Subtasks
-- [ ] 2.1 Reorganizar a composição da `PracticeSession` para refletir o fluxo principal pergunta + formulário.
-- [ ] 2.2 Reposicionar os painéis secundários em uma seção inferior coerente com o novo layout desktop-first.
-- [ ] 2.3 Ajustar os estilos compartilhados em `App.css` para a nova hierarquia visual e responsividade básica.
-- [ ] 2.4 Atualizar os testes da tela de prática para cobrir a nova renderização e prevenir regressões de comportamento.
+- [x] 2.1 Reorganizar a composição da `PracticeSession` para refletir o fluxo principal pergunta + formulário.
+- [x] 2.2 Reposicionar os painéis secundários em uma seção inferior coerente com o novo layout desktop-first.
+- [x] 2.3 Ajustar os estilos compartilhados em `App.css` para a nova hierarquia visual e responsividade básica.
+- [x] 2.4 Atualizar os testes da tela de prática para cobrir a nova renderização e prevenir regressões de comportamento.
 
 ## Implementation Details
 
@@ -67,14 +67,14 @@ A mudança deve reaproveitar `CountdownTimer`, `OvertimeAlert`, `FinishConfirmat
 
 ## Tests
 - Unit tests:
-  - [ ] A renderização da pergunta preserva múltiplas linhas sem perder conteúdo.
-  - [ ] Os componentes condicionais de overtime, erro e conclusão continuam aparecendo com os mesmos estados.
+  - [x] A renderização da pergunta preserva múltiplas linhas sem perder conteúdo.
+  - [x] Os componentes condicionais de overtime, erro e conclusão continuam aparecendo com os mesmos estados.
 - Integration tests:
-  - [ ] A tela de prática exibe a pergunta antes do formulário STAR no fluxo principal.
-  - [ ] O timer continua iniciando, entrando em overtime e mantendo o alerta sonoro uma única vez.
-  - [ ] O preview continua sendo atualizado conforme os campos STAR mudam.
-  - [ ] O fluxo de confirmação e salvamento continua avançando corretamente após sucesso.
-  - [ ] Em falha de salvamento, a pergunta e o rascunho permanecem visíveis.
+  - [x] A tela de prática exibe a pergunta antes do formulário STAR no fluxo principal.
+  - [x] O timer continua iniciando, entrando em overtime e mantendo o alerta sonoro uma única vez.
+  - [x] O preview continua sendo atualizado conforme os campos STAR mudam.
+  - [x] O fluxo de confirmação e salvamento continua avançando corretamente após sucesso.
+  - [x] Em falha de salvamento, a pergunta e o rascunho permanecem visíveis.
 - Test coverage target: >=80%
 - All tests must pass
 
