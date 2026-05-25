@@ -19,6 +19,14 @@ export type AnswerRecord = {
   updatedAt: string
 }
 
+export type SessionSummary = {
+  sessionId: string
+  answeredCount: number
+  targetSeconds: number
+  totalElapsedSeconds: number
+  completedAt: string
+}
+
 const DEFAULT_API_BASE_URL = 'http://localhost:3100'
 
 type ApiErrorResponse = {
@@ -78,4 +86,39 @@ export async function createAnswer(
   }
 
   return (await response.json()) as AnswerRecord
+}
+
+export async function listSessions(): Promise<SessionSummary[]> {
+  const response = await fetch(`${getApiBaseUrl()}/sessions`)
+
+  if (!response.ok) {
+    throw new Error('Failed to load the saved sessions.')
+  }
+
+  return (await response.json()) as SessionSummary[]
+}
+
+export async function listAnswersBySession(
+  sessionId: string,
+): Promise<AnswerRecord[]> {
+  const response = await fetch(`${getApiBaseUrl()}/sessions/${sessionId}/answers`)
+
+  if (!response.ok) {
+    let errorBody: ApiErrorResponse | undefined
+
+    try {
+      errorBody = (await response.json()) as ApiErrorResponse
+    } catch {
+      errorBody = undefined
+    }
+
+    throw new Error(
+      getErrorMessage(
+        errorBody ?? {},
+        'Failed to load the answers for this session.',
+      ),
+    )
+  }
+
+  return (await response.json()) as AnswerRecord[]
 }

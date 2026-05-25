@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import type { AnswerRecord } from '../services/api'
 import { CountdownTimer } from '../components/CountdownTimer'
 import { FinishConfirmation } from '../components/FinishConfirmation'
 import { OvertimeAlert } from '../components/OvertimeAlert'
@@ -10,12 +11,13 @@ import { playOvertimeAlert } from '../utils/playOvertimeAlert'
 
 type PracticeSessionProps = {
   session: PreparedSession
+  onSessionComplete?: (answers: AnswerRecord[]) => void
 }
 
 const EMPTY_PARAGRAPH_COPY = 'Keep typing in this STAR field to build the paragraph.'
 const STAR_FIELD_ORDER = ['s', 't', 'a', 'r'] as const
 
-export function PracticeSession({ session }: PracticeSessionProps) {
+export function PracticeSession({ session, onSessionComplete }: PracticeSessionProps) {
   const practiceSession = usePracticeSession(session)
 
   useEffect(() => {
@@ -23,6 +25,16 @@ export function PracticeSession({ session }: PracticeSessionProps) {
       playOvertimeAlert()
     }
   }, [practiceSession.hasJustEnteredOvertime])
+
+  useEffect(() => {
+    if (practiceSession.isSessionComplete && practiceSession.savedAnswers.length > 0) {
+      onSessionComplete?.(practiceSession.savedAnswers)
+    }
+  }, [
+    onSessionComplete,
+    practiceSession.isSessionComplete,
+    practiceSession.savedAnswers,
+  ])
 
   return (
     <main className="practice-layout">

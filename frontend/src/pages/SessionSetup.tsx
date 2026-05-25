@@ -8,6 +8,7 @@ type SessionSetupProps = {
   errorMessage: string
   onQuestionBlockChange: (value: string) => void
   onTargetSecondsChange: (value: string) => void
+  onOpenHistory: () => void
   onStartSession: () => void
 }
 
@@ -18,6 +19,7 @@ export function SessionSetup({
   errorMessage,
   onQuestionBlockChange,
   onTargetSecondsChange,
+  onOpenHistory,
   onStartSession,
 }: SessionSetupProps) {
   return (
@@ -53,9 +55,14 @@ export function SessionSetup({
 
             {errorMessage ? <p className="error-text">{errorMessage}</p> : null}
 
-            <button type="button" className="primary-button" onClick={onStartSession}>
-              Start session
-            </button>
+            <div className="setup-actions">
+              <button type="button" className="primary-button" onClick={onStartSession}>
+                Start session
+              </button>
+              <button type="button" className="secondary-button" onClick={onOpenHistory}>
+                View history
+              </button>
+            </div>
           </section>
 
           <QuestionPreview questions={parsedQuestions} />

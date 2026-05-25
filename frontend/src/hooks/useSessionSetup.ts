@@ -58,6 +58,10 @@ export function useSessionSetup() {
     })
   }
 
+  function resetSession() {
+    setPreparedSession(null)
+  }
+
   return {
     rawQuestionBlock,
     targetSecondsInput,
@@ -67,5 +71,6 @@ export function useSessionSetup() {
     setRawQuestionBlock,
     setTargetSecondsInput,
     handleStartSession,
+    resetSession,
   }
 }

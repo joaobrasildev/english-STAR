@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "Entregar resumo final e tela de histórico"
 type: frontend
 complexity: medium
@@ -29,10 +29,10 @@ Esta task conclui o MVP com a exibição do resumo da sessão atual e uma tela s
 </requirements>
 
 ## Subtasks
-- [ ] 6.1 Construir a tela de resumo da sessão atual com lista de tempos por resposta.
-- [ ] 6.2 Construir a tela simples de histórico de sessões passadas.
-- [ ] 6.3 Integrar a consulta de detalhes de uma sessão específica com suas respostas ordenadas.
-- [ ] 6.4 Garantir consistência visual e de ordenação entre resumo atual e histórico persistido.
+- [x] 6.1 Construir a tela de resumo da sessão atual com lista de tempos por resposta.
+- [x] 6.2 Construir a tela simples de histórico de sessões passadas.
+- [x] 6.3 Integrar a consulta de detalhes de uma sessão específica com suas respostas ordenadas.
+- [x] 6.4 Garantir consistência visual e de ordenação entre resumo atual e histórico persistido.
 
 ## Implementation Details
 Seguir o TechSpec "API Endpoints", "Impact Analysis" e "Success Metrics". Esta task deve consumir a API já pronta e o fluxo de respostas persistidas, sem redefinir schema ou contratos de backend.
@@ -64,13 +64,13 @@ Seguir o TechSpec "API Endpoints", "Impact Analysis" e "Success Metrics". Esta t
 
 ## Tests
 - Unit tests:
-  - [ ] Validar que a lista do resumo final exibe respostas na ordem correta das perguntas.
-  - [ ] Validar que o histórico agrupa respostas por `sessionId` e calcula totais exibidos corretamente.
-  - [ ] Validar que a formatação do tempo distingue corretamente tempo-alvo e tempo real quando ambos estiverem disponíveis.
+  - [x] Validar que a lista do resumo final exibe respostas na ordem correta das perguntas.
+  - [x] Validar que o histórico agrupa respostas por `sessionId` e calcula totais exibidos corretamente.
+  - [x] Validar que a formatação do tempo distingue corretamente tempo-alvo e tempo real quando ambos estiverem disponíveis.
 - Integration tests:
-  - [ ] Finalizar uma sessão exibe o resumo com o tempo de cada resposta salva.
-  - [ ] A tela de histórico lista sessões anteriores retornadas por `GET /sessions`.
-  - [ ] Abrir uma sessão do histórico carrega respostas ordenadas via `GET /sessions/:sessionId/answers`.
+  - [x] Finalizar uma sessão exibe o resumo com o tempo de cada resposta salva.
+  - [x] A tela de histórico lista sessões anteriores retornadas por `GET /sessions`.
+  - [x] Abrir uma sessão do histórico carrega respostas ordenadas via `GET /sessions/:sessionId/answers`.
 - Test coverage target: >=80%
 - All tests must pass
 
