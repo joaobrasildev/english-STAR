@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "Alinhar prática, save e resumo ao sessionId do backend"
 type: frontend
 complexity: high
@@ -30,10 +30,10 @@ Esta task adapta o fluxo de prática para operar inteiramente com o `sessionId` 
 </requirements>
 
 ## Subtasks
-- [ ] 4.1 Ajustar `usePracticeSession` para operar com `sessionId` persistido no backend e manter o save coerente.
-- [ ] 4.2 Garantir que `PracticeSession` preserve draft, retry e feedback claro em falhas de save.
-- [ ] 4.3 Revisar `App.tsx` e o handoff para resumo para manter a propagação correta do `sessionId`.
-- [ ] 4.4 Atualizar os testes do fluxo de prática para cobrir sucesso, falha e conclusão com sessão persistida.
+- [x] 4.1 Ajustar `usePracticeSession` para operar com `sessionId` persistido no backend e manter o save coerente.
+- [x] 4.2 Garantir que `PracticeSession` preserve draft, retry e feedback claro em falhas de save.
+- [x] 4.3 Revisar `App.tsx` e o handoff para resumo para manter a propagação correta do `sessionId`.
+- [x] 4.4 Atualizar os testes do fluxo de prática para cobrir sucesso, falha e conclusão com sessão persistida.
 
 ## Implementation Details
 Seguir o TechSpec "Data Flow", "Impact Analysis", "Testing Approach" e "Known Risks". Esta task deve ajustar o comportamento da prática ao novo lifecycle sem reinventar o fluxo de escrita, timer, preview e resumo.
@@ -67,13 +67,13 @@ Seguir o TechSpec "Data Flow", "Impact Analysis", "Testing Approach" e "Known Ri
 
 ## Tests
 - Unit tests:
-  - [ ] Validar que `confirmFinishQuestion` envia `sessionId` vindo do backend no payload de save.
-  - [ ] Validar que falha de save preserva `currentQuestion`, `currentAnswer` e estado de retry.
-  - [ ] Validar que o fluxo da última pergunta conclui a sessão sem regenerar `sessionId`.
+  - [x] Validar que `confirmFinishQuestion` envia `sessionId` vindo do backend no payload de save.
+  - [x] Validar que falha de save preserva `currentQuestion`, `currentAnswer` e estado de retry.
+  - [x] Validar que o fluxo da última pergunta conclui a sessão sem regenerar `sessionId`.
 - Integration tests:
-  - [ ] Sessão criada pelo backend salva uma resposta válida e avança para a próxima pergunta.
-  - [ ] Falha de save mantém o draft na tela e oferece retry imediato.
-  - [ ] Ao finalizar a última pergunta, o resumo recebe o `sessionId` persistido e mantém o fluxo atual.
+  - [x] Sessão criada pelo backend salva uma resposta válida e avança para a próxima pergunta.
+  - [x] Falha de save mantém o draft na tela e oferece retry imediato.
+  - [x] Ao finalizar a última pergunta, o resumo recebe o `sessionId` persistido e mantém o fluxo atual.
 - Test coverage target: >=80%
 - All tests must pass
 

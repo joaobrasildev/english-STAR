@@ -36,7 +36,7 @@ describe('Session review flow', () => {
   it('shows the final summary with the saved answer timings after a session is completed', async () => {
     const user = userEvent.setup()
     createSession.mockResolvedValue({
-      sessionId: '11111111-1111-1111-1111-111111111111',
+      sessionId: 'server-session-1',
       rawQuestionBlock: '1. Tell me about yourself\nFocus on the most recent role.',
       parsedQuestions: ['Tell me about yourself\nFocus on the most recent role.'],
       targetSeconds: 120,
@@ -66,7 +66,7 @@ describe('Session review flow', () => {
     await user.click(screen.getByRole('button', { name: 'Confirm and save' }))
 
     expect(await screen.findByText('Review the timing for this session')).toBeInTheDocument()
-    expect(screen.getByText('11111111-1111-1111-1111-111111111111')).toBeInTheDocument()
+    expect(screen.getByText('server-session-1')).toBeInTheDocument()
     expect(
       screen.getByText((_, element) => {
         return (

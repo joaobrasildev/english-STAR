@@ -9,9 +9,14 @@ import type { PreparedSession } from '../types/session'
 import { STAR_FIELD_LABELS } from '../utils/composeAnswer'
 import { playOvertimeAlert } from '../utils/playOvertimeAlert'
 
+type CompletedPracticeSession = {
+  sessionId: string
+  answers: AnswerRecord[]
+}
+
 type PracticeSessionProps = {
   session: PreparedSession
-  onSessionComplete?: (answers: AnswerRecord[]) => void
+  onSessionComplete?: (session: CompletedPracticeSession) => void
 }
 
 const EMPTY_PARAGRAPH_COPY = 'Keep typing in this STAR field to build the paragraph.'
@@ -28,11 +33,15 @@ export function PracticeSession({ session, onSessionComplete }: PracticeSessionP
 
   useEffect(() => {
     if (practiceSession.isSessionComplete && practiceSession.savedAnswers.length > 0) {
-      onSessionComplete?.(practiceSession.savedAnswers)
+      onSessionComplete?.({
+        sessionId: practiceSession.sessionId,
+        answers: practiceSession.savedAnswers,
+      })
     }
   }, [
     onSessionComplete,
     practiceSession.isSessionComplete,
+    practiceSession.sessionId,
     practiceSession.savedAnswers,
   ])
 
