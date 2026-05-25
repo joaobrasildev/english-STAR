@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "Criar a sessão no setup do frontend antes da prática"
 type: frontend
 complexity: high
@@ -29,11 +29,11 @@ Esta task move o início real da sessão para o setup do frontend, fazendo o app
 </requirements>
 
 ## Subtasks
-- [ ] 3.1 Refatorar `useSessionSetup` para trocar geração local de sessão por criação assíncrona via API.
-- [ ] 3.2 Atualizar `SessionSetup` para refletir loading, erro de criação de sessão e bloqueio de múltiplos starts.
-- [ ] 3.3 Ajustar `App.tsx` para só entrar na prática após receber uma sessão persistida do backend.
-- [ ] 3.4 Atualizar o cliente de API e os tipos do frontend para o contrato de `POST /sessions`.
-- [ ] 3.5 Atualizar testes de setup e handoff para cobrir sucesso e falha do create-session.
+- [x] 3.1 Refatorar `useSessionSetup` para trocar geração local de sessão por criação assíncrona via API.
+- [x] 3.2 Atualizar `SessionSetup` para refletir loading, erro de criação de sessão e bloqueio de múltiplos starts.
+- [x] 3.3 Ajustar `App.tsx` para só entrar na prática após receber uma sessão persistida do backend.
+- [x] 3.4 Atualizar o cliente de API e os tipos do frontend para o contrato de `POST /sessions`.
+- [x] 3.5 Atualizar testes de setup e handoff para cobrir sucesso e falha do create-session.
 
 ## Implementation Details
 Seguir o TechSpec "Component Overview", "Data Flow", "Impact Analysis" e "Testing Approach". Esta task deve manter parsing de perguntas e validação local existentes, mudando apenas a origem do `sessionId` e o momento em que a prática se torna disponível.
@@ -67,13 +67,13 @@ Seguir o TechSpec "Component Overview", "Data Flow", "Impact Analysis" e "Testin
 
 ## Tests
 - Unit tests:
-  - [ ] Validar que `useSessionSetup` chama `createSession` apenas após validação local bem-sucedida.
-  - [ ] Validar que falha em `createSession` mantém o usuário no setup com mensagem clara.
-  - [ ] Validar que `PreparedSession.sessionId` passa a vir da resposta do backend, sem geração local.
+  - [x] Validar que `useSessionSetup` chama `createSession` apenas após validação local bem-sucedida.
+  - [x] Validar que falha em `createSession` mantém o usuário no setup com mensagem clara.
+  - [x] Validar que `PreparedSession.sessionId` passa a vir da resposta do backend, sem geração local.
 - Integration tests:
-  - [ ] Clicar em `Start session` com payload válido chama `POST /sessions` e abre a prática ao receber sucesso.
-  - [ ] Falha em `POST /sessions` não entra na prática e mantém perguntas/tempo-alvo disponíveis para retry.
-  - [ ] O frontend não dispara múltiplas criações de sessão para um único start em loading.
+  - [x] Clicar em `Start session` com payload válido chama `POST /sessions` e abre a prática ao receber sucesso.
+  - [x] Falha em `POST /sessions` não entra na prática e mantém perguntas/tempo-alvo disponíveis para retry.
+  - [x] O frontend não dispara múltiplas criações de sessão para um único start em loading.
 - Test coverage target: >=80%
 - All tests must pass
 

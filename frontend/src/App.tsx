@@ -66,6 +66,7 @@ export function App() {
       targetSecondsInput={sessionSetup.targetSecondsInput}
       parsedQuestions={sessionSetup.parsedQuestions}
       errorMessage={sessionSetup.errorMessage}
+      isStartingSession={sessionSetup.isStartingSession}
       onQuestionBlockChange={sessionSetup.setRawQuestionBlock}
       onTargetSecondsChange={sessionSetup.setTargetSecondsInput}
       onOpenHistory={() => setScreen('history')}

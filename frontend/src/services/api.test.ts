@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
+  createSession,
   createAnswer,
   listAnswersBySession,
   listSessions,
@@ -10,6 +11,34 @@ afterEach(() => {
 })
 
 describe('api service', () => {
+  it('creates a persisted practice session through POST /sessions', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ sessionId: 'server-session-1', status: 'active' }),
+    })
+    vi.stubGlobal('fetch', fetchMock)
+
+    await expect(
+      createSession({
+        rawQuestionBlock: '1. Tell me about yourself',
+        parsedQuestions: ['Tell me about yourself'],
+        targetSeconds: 120,
+      }),
+    ).resolves.toEqual({ sessionId: 'server-session-1', status: 'active' })
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      'http://localhost:3100/sessions',
+      expect.objectContaining({
+        method: 'POST',
+        body: JSON.stringify({
+          rawQuestionBlock: '1. Tell me about yourself',
+          parsedQuestions: ['Tell me about yourself'],
+          targetSeconds: 120,
+        }),
+      }),
+    )
+  })
+
   it('creates a saved answer through POST /answers', async () => {
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
@@ -93,5 +122,21 @@ describe('api service', () => {
     await expect(listAnswersBySession('missing-session')).rejects.toThrow(
       'Session was not found.',
     )
+  })
+
+  it('surfaces backend errors when POST /sessions fails', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: false,
+      json: async () => ({ message: 'Session setup failed.' }),
+    })
+    vi.stubGlobal('fetch', fetchMock)
+
+    await expect(
+      createSession({
+        rawQuestionBlock: '1. Tell me about yourself',
+        parsedQuestions: ['Tell me about yourself'],
+        targetSeconds: 120,
+      }),
+    ).rejects.toThrow('Session setup failed.')
   })
 })

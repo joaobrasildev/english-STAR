@@ -27,9 +27,25 @@ export type SessionSummary = {
   completedAt: string
 }
 
+export type CreateSessionPayload = {
+  rawQuestionBlock: string
+  parsedQuestions: string[]
+  targetSeconds: number
+}
+
+export type CreateSessionResponse = {
+  sessionId: string
+  rawQuestionBlock: string
+  parsedQuestions: string[]
+  targetSeconds: number
+  status?: 'active'
+}
+
 const DEFAULT_API_BASE_URL = 'http://localhost:3100'
 export const SAVE_ANSWER_RETRY_MESSAGE =
   'Failed to save the answer. Please try again.'
+export const CREATE_SESSION_RETRY_MESSAGE =
+  'Failed to start the session. Please try again.'
 
 type ApiErrorResponse = {
   message?: string | string[]
@@ -61,6 +77,43 @@ export function assertValidSessionId(sessionId: string): string {
   }
 
   return normalizedSessionId
+}
+
+export async function createSession(
+  payload: CreateSessionPayload,
+): Promise<CreateSessionResponse> {
+  let response: Response
+
+  try {
+    response = await fetch(`${getApiBaseUrl()}/sessions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    })
+  } catch {
+    throw new Error('Failed to start the session. Please check the backend connection.')
+  }
+
+  if (!response.ok) {
+    let errorBody: ApiErrorResponse | undefined
+
+    try {
+      errorBody = (await response.json()) as ApiErrorResponse
+    } catch {
+      errorBody = undefined
+    }
+
+    throw new Error(
+      getErrorMessage(
+        errorBody ?? {},
+        CREATE_SESSION_RETRY_MESSAGE,
+      ),
+    )
+  }
+
+  return (await response.json()) as CreateSessionResponse
 }
 
 export async function createAnswer(

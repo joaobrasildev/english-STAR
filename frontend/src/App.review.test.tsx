@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { App } from './App'
 
 const createAnswer = vi.fn()
+const createSession = vi.fn()
 const listSessions = vi.fn()
 const listAnswersBySession = vi.fn()
 
@@ -16,6 +17,7 @@ vi.mock('./services/api', async (importOriginal) => {
 
   return {
     ...actual,
+    createSession: (...args: unknown[]) => createSession(...args),
     createAnswer: (...args: unknown[]) => createAnswer(...args),
     listSessions: (...args: unknown[]) => listSessions(...args),
     listAnswersBySession: (...args: unknown[]) => listAnswersBySession(...args),
@@ -24,6 +26,7 @@ vi.mock('./services/api', async (importOriginal) => {
 
 describe('Session review flow', () => {
   afterEach(() => {
+    createSession.mockReset()
     createAnswer.mockReset()
     listSessions.mockReset()
     listAnswersBySession.mockReset()
@@ -32,9 +35,13 @@ describe('Session review flow', () => {
 
   it('shows the final summary with the saved answer timings after a session is completed', async () => {
     const user = userEvent.setup()
-    vi.spyOn(globalThis.crypto, 'randomUUID').mockReturnValue(
-      '11111111-1111-1111-1111-111111111111',
-    )
+    createSession.mockResolvedValue({
+      sessionId: '11111111-1111-1111-1111-111111111111',
+      rawQuestionBlock: '1. Tell me about yourself\nFocus on the most recent role.',
+      parsedQuestions: ['Tell me about yourself\nFocus on the most recent role.'],
+      targetSeconds: 120,
+      status: 'active',
+    })
     createAnswer.mockResolvedValue({
       id: 'answer-1',
       sessionId: 'server-session-1',
