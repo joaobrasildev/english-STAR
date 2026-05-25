@@ -13,6 +13,14 @@ function createEmptyAnswer() {
   }
 }
 
+function createSessionId(): string {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID()
+  }
+
+  return `session-${Date.now()}`
+}
+
 export function useSessionSetup() {
   const [rawQuestionBlock, setRawQuestionBlock] = useState('')
   const [targetSecondsInput, setTargetSecondsInput] = useState(String(DEFAULT_TARGET_SECONDS))
@@ -40,6 +48,7 @@ export function useSessionSetup() {
 
     setErrorMessage('')
     setPreparedSession({
+      sessionId: createSessionId(),
       rawQuestionBlock,
       parsedQuestions,
       targetSeconds: parsedTarget,

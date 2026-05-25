@@ -309,6 +309,43 @@
   color: #fecaca;
 }
 
+.finish-confirmation,
+.save-error-banner,
+.session-complete-banner {
+  border-radius: 18px;
+  padding: 1rem 1.1rem;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.finish-confirmation {
+  display: grid;
+  gap: 0.85rem;
+  background: rgba(59, 130, 246, 0.12);
+}
+
+.finish-confirmation h2,
+.finish-confirmation p {
+  margin: 0;
+}
+
+.confirmation-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.save-error-banner {
+  background: rgba(248, 113, 113, 0.14);
+  border-color: rgba(248, 113, 113, 0.3);
+  color: #fecaca;
+}
+
+.session-complete-banner {
+  background: rgba(74, 222, 128, 0.14);
+  border-color: rgba(74, 222, 128, 0.3);
+  color: #bbf7d0;
+}
+
 .star-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

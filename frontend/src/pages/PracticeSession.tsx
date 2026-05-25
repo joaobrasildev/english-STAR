@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { CountdownTimer } from '../components/CountdownTimer'
+import { FinishConfirmation } from '../components/FinishConfirmation'
 import { OvertimeAlert } from '../components/OvertimeAlert'
 import { StarAnswerForm } from '../components/StarAnswerForm'
 import { usePracticeSession } from '../hooks/usePracticeSession'
@@ -60,12 +61,40 @@ export function PracticeSession({ session }: PracticeSessionProps) {
               elapsedSeconds={practiceSession.elapsedSeconds}
               remainingSeconds={practiceSession.remainingSeconds}
               overtimeSeconds={practiceSession.overtimeSeconds}
+              disableStart={
+                practiceSession.isSavingAnswer || practiceSession.isSessionComplete
+              }
+              disableComplete={
+                practiceSession.isSavingAnswer || practiceSession.isSessionComplete
+              }
               onStart={practiceSession.startQuestion}
-              onComplete={practiceSession.completeQuestion}
+              onComplete={practiceSession.requestFinishConfirmation}
             />
 
             {practiceSession.timerState === 'overtime' ? (
               <OvertimeAlert overtimeSeconds={practiceSession.overtimeSeconds} />
+            ) : null}
+
+            {practiceSession.saveError ? (
+              <section className="save-error-banner" role="alert">
+                {practiceSession.saveError}
+              </section>
+            ) : null}
+
+            {practiceSession.isAwaitingFinishConfirmation ? (
+              <FinishConfirmation
+                isSaving={practiceSession.isSavingAnswer}
+                onCancel={practiceSession.cancelFinishConfirmation}
+                onConfirm={() => {
+                  void practiceSession.confirmFinishQuestion()
+                }}
+              />
+            ) : null}
+
+            {practiceSession.isSessionComplete ? (
+              <section className="session-complete-banner" role="status">
+                Session complete. Your final answer was saved successfully.
+              </section>
             ) : null}
 
             <StarAnswerForm

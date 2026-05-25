@@ -10,12 +10,19 @@ import type { PreparedSession } from '../types/session'
 import { PracticeSession } from './PracticeSession'
 import { playOvertimeAlert } from '../utils/playOvertimeAlert'
 
+const createAnswer = vi.fn()
+
 vi.mock('../utils/playOvertimeAlert', () => ({
   playOvertimeAlert: vi.fn(),
 }))
 
+vi.mock('../services/api', () => ({
+  createAnswer: (...args: unknown[]) => createAnswer(...args),
+}))
+
 function createSession(targetSeconds = 2): PreparedSession {
   return {
+    sessionId: 'session-1',
     rawQuestionBlock:
       '1. Tell me about yourself\n2. Describe a challenge you solved',
     parsedQuestions: [
@@ -37,6 +44,7 @@ function createSession(targetSeconds = 2): PreparedSession {
 describe('Practice session flow', () => {
   afterEach(() => {
     vi.mocked(playOvertimeAlert).mockClear()
+    createAnswer.mockReset()
   })
 
   it('shows the current question, starts the timer, and keeps the STAR fields editable', () => {
@@ -107,5 +115,97 @@ describe('Practice session flow', () => {
         'We launched on the new deadline with no regressions.',
       ),
     ).toBeInTheDocument()
+  })
+
+  it('confirms the finish, saves the answer, and advances to the next question after success', async () => {
+    createAnswer.mockResolvedValue({
+      id: 'answer-1',
+      sessionId: 'session-1',
+      questionOrder: 1,
+      questionText: 'Tell me about yourself',
+      fullAnswer: 'Situation text\n\n\n\n\n\n',
+      targetSeconds: 2,
+      elapsedSeconds: 0,
+      createdAt: '2026-05-25T09:00:00.000Z',
+      updatedAt: '2026-05-25T09:00:00.000Z',
+    })
+
+    render(<PracticeSession session={createSession()} />)
+
+    fireEvent.change(screen.getByRole('textbox', { name: /Situation \(S\)/ }), {
+      target: { value: 'Situation text' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Start question' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Mark question as complete' }))
+
+    expect(screen.getByRole('alertdialog')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Confirm and save' }))
+
+    expect(await screen.findByText('Describe a challenge you solved')).toBeInTheDocument()
+    expect(createAnswer).toHaveBeenCalledWith({
+      sessionId: 'session-1',
+      questionOrder: 1,
+      questionText: 'Tell me about yourself',
+      fullAnswer: 'Situation text\n\n\n\n\n\n',
+      targetSeconds: 2,
+      elapsedSeconds: 0,
+    })
+  })
+
+  it('keeps the same question visible and shows an error when saving fails', async () => {
+    createAnswer.mockRejectedValue(new Error('Backend unavailable'))
+
+    render(<PracticeSession session={createSession()} />)
+
+    fireEvent.change(screen.getByRole('textbox', { name: /Situation \(S\)/ }), {
+      target: { value: 'Keep this draft' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Start question' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Mark question as complete' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Confirm and save' }))
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('Backend unavailable')
+    expect(screen.getByText('Tell me about yourself')).toBeInTheDocument()
+    expect(screen.getByRole('textbox', { name: /Situation \(S\)/ })).toHaveValue(
+      'Keep this draft',
+    )
+  })
+
+  it('saves the last question without trying to advance beyond the session', async () => {
+    createAnswer.mockResolvedValue({
+      id: 'answer-1',
+      sessionId: 'session-1',
+      questionOrder: 1,
+      questionText: 'Tell me about yourself',
+      fullAnswer: 'Final answer\n\n\n\n\n\n',
+      targetSeconds: 2,
+      elapsedSeconds: 0,
+      createdAt: '2026-05-25T09:00:00.000Z',
+      updatedAt: '2026-05-25T09:00:00.000Z',
+    })
+
+    render(
+      <PracticeSession
+        session={{
+          ...createSession(),
+          rawQuestionBlock: '1. Tell me about yourself',
+          parsedQuestions: ['Tell me about yourself'],
+        }}
+      />,
+    )
+
+    fireEvent.change(screen.getByRole('textbox', { name: /Situation \(S\)/ }), {
+      target: { value: 'Final answer' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Start question' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Mark question as complete' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Confirm and save' }))
+
+    expect(
+      await screen.findByText('Session complete. Your final answer was saved successfully.'),
+    ).toBeInTheDocument()
+    expect(screen.getByText('Tell me about yourself')).toBeInTheDocument()
+    expect(screen.queryByText('Describe a challenge you solved')).not.toBeInTheDocument()
   })
 })

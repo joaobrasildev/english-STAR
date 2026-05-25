@@ -1,17 +1,22 @@
 import { useEffect, useMemo, useReducer } from 'react'
+import { createAnswer, type AnswerRecord, type CreateAnswerPayload } from '../services/api'
 import type { PreparedSession } from '../types/session'
 import {
   composeAnswer,
   composeAnswerParagraphs,
 } from '../utils/composeAnswer'
 import {
+  cancelFinishConfirmation,
   createPracticeSessionState,
+  failSavingAnswer,
+  finishSavingAnswer,
   getOvertimeSeconds,
   getRemainingSeconds,
   type AnswerFieldKey,
   type PracticeSessionState,
-  completePracticeTimer,
+  requestFinishConfirmation,
   startPracticeTimer,
+  startSavingAnswer,
   tickPracticeTimer,
   updatePracticeAnswer,
 } from '../utils/practiceSessionState'
@@ -20,7 +25,15 @@ type PracticeSessionAction =
   | { type: 'update-answer'; field: AnswerFieldKey; value: string }
   | { type: 'start-question' }
   | { type: 'tick' }
-  | { type: 'complete-question' }
+  | { type: 'request-finish-confirmation' }
+  | { type: 'cancel-finish-confirmation' }
+  | { type: 'start-saving-answer' }
+  | { type: 'finish-saving-answer'; savedAnswer: AnswerRecord }
+  | { type: 'fail-saving-answer'; errorMessage: string }
+
+type UsePracticeSessionOptions = {
+  saveAnswer?: (payload: CreateAnswerPayload) => Promise<AnswerRecord>
+}
 
 function practiceSessionReducer(
   state: PracticeSessionState,
@@ -33,14 +46,40 @@ function practiceSessionReducer(
       return startPracticeTimer(state)
     case 'tick':
       return tickPracticeTimer(state)
-    case 'complete-question':
-      return completePracticeTimer(state)
+    case 'request-finish-confirmation':
+      return requestFinishConfirmation(state)
+    case 'cancel-finish-confirmation':
+      return cancelFinishConfirmation(state)
+    case 'start-saving-answer':
+      return startSavingAnswer(state)
+    case 'finish-saving-answer':
+      return finishSavingAnswer(state, action.savedAnswer)
+    case 'fail-saving-answer':
+      return failSavingAnswer(state, action.errorMessage)
     default:
       return state
   }
 }
 
-export function usePracticeSession(session: PreparedSession) {
+function buildCreateAnswerPayload(
+  state: PracticeSessionState,
+  fullAnswer: string,
+): CreateAnswerPayload {
+  return {
+    sessionId: state.sessionId,
+    questionOrder: state.currentIndex + 1,
+    questionText: state.parsedQuestions[state.currentIndex] ?? '',
+    fullAnswer,
+    targetSeconds: state.targetSeconds,
+    elapsedSeconds: state.elapsedSeconds,
+  }
+}
+
+export function usePracticeSession(
+  session: PreparedSession,
+  options: UsePracticeSessionOptions = {},
+) {
+  const saveAnswer = options.saveAnswer ?? createAnswer
   const [state, dispatch] = useReducer(
     practiceSessionReducer,
     session,
@@ -86,8 +125,36 @@ export function usePracticeSession(session: PreparedSession) {
     startQuestion() {
       dispatch({ type: 'start-question' })
     },
-    completeQuestion() {
-      dispatch({ type: 'complete-question' })
+    requestFinishConfirmation() {
+      dispatch({ type: 'request-finish-confirmation' })
+    },
+    cancelFinishConfirmation() {
+      dispatch({ type: 'cancel-finish-confirmation' })
+    },
+    async confirmFinishQuestion() {
+      if (!state.isAwaitingFinishConfirmation || state.isSavingAnswer) {
+        return false
+      }
+
+      dispatch({ type: 'start-saving-answer' })
+
+      try {
+        const savedAnswer = await saveAnswer(
+          buildCreateAnswerPayload(state, composedAnswer),
+        )
+
+        dispatch({ type: 'finish-saving-answer', savedAnswer })
+        return true
+      } catch (error: unknown) {
+        dispatch({
+          type: 'fail-saving-answer',
+          errorMessage:
+            error instanceof Error
+              ? error.message
+              : 'Failed to save the answer. Please try again.',
+        })
+        return false
+      }
     },
   }
 }

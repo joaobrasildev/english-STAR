@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "Integrar finalização da resposta com salvamento e progressão"
 type: frontend
 complexity: high
@@ -29,10 +29,10 @@ Esta task conecta a experiência de prática ao backend, garantindo que a respos
 </requirements>
 
 ## Subtasks
-- [ ] 5.1 Adicionar a ação de finalizar questão com confirmação explícita.
-- [ ] 5.2 Integrar a tela de prática ao endpoint `POST /answers`.
-- [ ] 5.3 Garantir que o avanço para a próxima pergunta dependa de resposta salva com sucesso.
-- [ ] 5.4 Exibir feedback de erro claro quando o salvamento falhar e preservar o estado atual da resposta.
+- [x] 5.1 Adicionar a ação de finalizar questão com confirmação explícita.
+- [x] 5.2 Integrar a tela de prática ao endpoint `POST /answers`.
+- [x] 5.3 Garantir que o avanço para a próxima pergunta dependa de resposta salva com sucesso.
+- [x] 5.4 Exibir feedback de erro claro quando o salvamento falhar e preservar o estado atual da resposta.
 
 ## Implementation Details
 Seguir o TechSpec "API Endpoints", "Contracto funcional esperado entre frontend e backend" e "Known Risks". Esta task conecta frontend e backend, mas não deve assumir construção da tela de histórico final.
@@ -64,13 +64,13 @@ Seguir o TechSpec "API Endpoints", "Contracto funcional esperado entre frontend 
 
 ## Tests
 - Unit tests:
-  - [ ] Validar que a confirmação é obrigatória antes de disparar o salvamento.
-  - [ ] Validar que o payload enviado ao backend contém `fullAnswer`, `questionOrder`, `targetSeconds` e `elapsedSeconds`.
-  - [ ] Validar que o estado da pergunta atual não é limpo quando o salvamento falha.
+  - [x] Validar que a confirmação é obrigatória antes de disparar o salvamento.
+  - [x] Validar que o payload enviado ao backend contém `fullAnswer`, `questionOrder`, `targetSeconds` e `elapsedSeconds`.
+  - [x] Validar que o estado da pergunta atual não é limpo quando o salvamento falha.
 - Integration tests:
-  - [ ] Confirmar o término de uma questão envia `POST /answers` e avança para a próxima pergunta após `201 Created`.
-  - [ ] Receber erro no `POST /answers` mantém a mesma pergunta na tela e exibe feedback de falha.
-  - [ ] Concluir a última pergunta salva a resposta final sem tentar avançar para uma pergunta inexistente.
+  - [x] Confirmar o término de uma questão envia `POST /answers` e avança para a próxima pergunta após `201 Created`.
+  - [x] Receber erro no `POST /answers` mantém a mesma pergunta na tela e exibe feedback de falha.
+  - [x] Concluir a última pergunta salva a resposta final sem tentar avançar para uma pergunta inexistente.
 - Test coverage target: >=80%
 - All tests must pass
 

@@ -6,6 +6,8 @@ type CountdownTimerProps = {
   elapsedSeconds: number
   remainingSeconds: number
   overtimeSeconds: number
+  disableStart?: boolean
+  disableComplete?: boolean
   onStart: () => void
   onComplete: () => void
 }
@@ -68,6 +70,8 @@ export function CountdownTimer({
   elapsedSeconds,
   remainingSeconds,
   overtimeSeconds,
+  disableStart = false,
+  disableComplete = false,
   onStart,
   onComplete,
 }: CountdownTimerProps) {
@@ -103,7 +107,7 @@ export function CountdownTimer({
           type="button"
           className="primary-button"
           onClick={onStart}
-          disabled={timerState !== 'idle'}
+          disabled={timerState !== 'idle' || disableStart}
         >
           Start question
         </button>
@@ -111,7 +115,7 @@ export function CountdownTimer({
           type="button"
           className="secondary-button"
           onClick={onComplete}
-          disabled={timerState === 'idle' || timerState === 'completed'}
+          disabled={timerState === 'idle' || disableComplete}
         >
           Mark question as complete
         </button>

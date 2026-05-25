@@ -1,16 +1,22 @@
 import { describe, expect, it } from 'vitest'
 import type { PreparedSession } from '../types/session'
 import {
+  cancelFinishConfirmation,
   completePracticeTimer,
   createPracticeSessionState,
+  failSavingAnswer,
+  finishSavingAnswer,
   getOvertimeSeconds,
   getRemainingSeconds,
+  requestFinishConfirmation,
+  startSavingAnswer,
   startPracticeTimer,
   tickPracticeTimer,
   updatePracticeAnswer,
 } from './practiceSessionState'
 
 const baseSession: PreparedSession = {
+  sessionId: 'session-1',
   rawQuestionBlock: '1. Tell me about yourself',
   parsedQuestions: ['Tell me about yourself'],
   targetSeconds: 2,
@@ -66,5 +72,53 @@ describe('practiceSessionState', () => {
 
     expect(completePracticeTimer(initialState).timerState).toBe('idle')
     expect(completePracticeTimer(startedState).timerState).toBe('completed')
+  })
+
+  it('opens and closes the explicit finish confirmation state', () => {
+    const startedState = startPracticeTimer(createPracticeSessionState(baseSession))
+
+    expect(requestFinishConfirmation(startedState).isAwaitingFinishConfirmation).toBe(true)
+    expect(
+      cancelFinishConfirmation(requestFinishConfirmation(startedState))
+        .isAwaitingFinishConfirmation,
+    ).toBe(false)
+  })
+
+  it('does not start saving before the confirmation is requested', () => {
+    const startedState = startPracticeTimer(createPracticeSessionState(baseSession))
+
+    expect(startSavingAnswer(startedState).isSavingAnswer).toBe(false)
+    expect(
+      startSavingAnswer(requestFinishConfirmation(startedState)).isSavingAnswer,
+    ).toBe(true)
+  })
+
+  it('preserves the current answer when saving fails and completes the session only after success', () => {
+    const startedState = updatePracticeAnswer(
+      startPracticeTimer(createPracticeSessionState(baseSession)),
+      's',
+      'Draft answer',
+    )
+    const savingState = startSavingAnswer(requestFinishConfirmation(startedState))
+    const failedState = failSavingAnswer(savingState, 'Save failed')
+
+    expect(failedState.currentAnswer.s).toBe('Draft answer')
+    expect(failedState.currentIndex).toBe(0)
+    expect(failedState.saveError).toBe('Save failed')
+
+    const finishedState = finishSavingAnswer(savingState, {
+      id: 'answer-1',
+      sessionId: 'session-1',
+      questionOrder: 1,
+      questionText: 'Tell me about yourself',
+      fullAnswer: 'Draft answer',
+      targetSeconds: 2,
+      elapsedSeconds: 1,
+      createdAt: '2026-05-25T09:00:00.000Z',
+      updatedAt: '2026-05-25T09:00:00.000Z',
+    })
+
+    expect(finishedState.savedAnswers).toHaveLength(1)
+    expect(finishedState.isSessionComplete).toBe(true)
   })
 })

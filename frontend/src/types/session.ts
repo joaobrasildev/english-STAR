@@ -8,6 +8,7 @@ export type CurrentAnswer = {
 }
 
 export type PreparedSession = {
+  sessionId: string
   rawQuestionBlock: string
   parsedQuestions: string[]
   targetSeconds: number
