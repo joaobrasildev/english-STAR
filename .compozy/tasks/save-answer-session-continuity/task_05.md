@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "Estabilizar histórico e contratos finais do lifecycle da sessão"
 type: bugfix
 complexity: medium
@@ -31,10 +31,10 @@ Esta task consolida os contratos finais do novo lifecycle de sessão, garantindo
 </requirements>
 
 ## Subtasks
-- [ ] 5.1 Revisar contratos de history/review para compatibilidade com o `sessionId` persistido no backend.
-- [ ] 5.2 Ajustar clientes, mocks e testes de API para o novo lifecycle create-session -> answers.
-- [ ] 5.3 Confirmar que `GET /sessions` continua derivado de `answer_records` sem listar sessões vazias nesta fase.
-- [ ] 5.4 Atualizar cobertura integrada e e2e para o fluxo completo até histórico e review.
+- [x] 5.1 Revisar contratos de history/review para compatibilidade com o `sessionId` persistido no backend.
+- [x] 5.2 Ajustar clientes, mocks e testes de API para o novo lifecycle create-session -> answers.
+- [x] 5.3 Confirmar que `GET /sessions` continua derivado de `answer_records` sem listar sessões vazias nesta fase.
+- [x] 5.4 Atualizar cobertura integrada e e2e para o fluxo completo até histórico e review.
 
 ## Implementation Details
 Seguir o TechSpec "API Endpoints", "Impact Analysis", "Integration Tests" e "Key Decisions". Esta task deve estabilizar as bordas finais do fluxo sem expandir escopo para migrar o histórico à tabela de sessões.
@@ -68,13 +68,13 @@ Seguir o TechSpec "API Endpoints", "Impact Analysis", "Integration Tests" e "Key
 
 ## Tests
 - Unit tests:
-  - [ ] Validar que o cliente de API mantém contratos corretos para `POST /sessions`, `POST /answers` e `GET /sessions`.
-  - [ ] Validar que review/summary exibem o `sessionId` persistido sem fallback silencioso.
-  - [ ] Validar que o histórico continua refletindo apenas sessões com answers salvas.
+  - [x] Validar que o cliente de API mantém contratos corretos para `POST /sessions`, `POST /answers` e `GET /sessions`.
+  - [x] Validar que review/summary exibem o `sessionId` persistido sem fallback silencioso.
+  - [x] Validar que o histórico continua refletindo apenas sessões com answers salvas.
 - Integration tests:
-  - [ ] Fluxo completo create-session -> save-answer -> summary continua funcional no frontend.
-  - [ ] `GET /sessions` não lista sessões criadas sem answers nesta fase.
-  - [ ] Abrir uma sessão no histórico continua carregando answers ordenadas após a mudança de lifecycle.
+  - [x] Fluxo completo create-session -> save-answer -> summary continua funcional no frontend.
+  - [x] `GET /sessions` não lista sessões criadas sem answers nesta fase.
+  - [x] Abrir uma sessão no histórico continua carregando answers ordenadas após a mudança de lifecycle.
 - Test coverage target: >=80%
 - All tests must pass
 

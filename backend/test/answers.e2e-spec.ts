@@ -159,6 +159,67 @@ describe('Answers endpoints (e2e)', () => {
     ]);
   });
 
+  it('GET /sessions does not list sessions created without saved answers', async () => {
+    await request(app.getHttpServer())
+      .post('/sessions')
+      .send({
+        rawQuestionBlock: 'e2e-empty-1. Tell me about yourself',
+        parsedQuestions: ['Tell me about yourself'],
+        targetSeconds: 120,
+      })
+      .expect(201);
+
+    const sessionsResponse = await request(app.getHttpServer())
+      .get('/sessions')
+      .expect(200);
+
+    expect(sessionsResponse.body).toEqual([]);
+  });
+
+  it('GET /sessions only lists sessions that already have saved answers', async () => {
+    const answeredSessionResponse = await request(app.getHttpServer())
+      .post('/sessions')
+      .send({
+        rawQuestionBlock: 'e2e-1. Tell me about yourself',
+        parsedQuestions: ['Tell me about yourself'],
+        targetSeconds: 120,
+      })
+      .expect(201);
+
+    await request(app.getHttpServer())
+      .post('/sessions')
+      .send({
+        rawQuestionBlock: 'e2e-2. Describe a challenge you solved',
+        parsedQuestions: ['Describe a challenge you solved'],
+        targetSeconds: 90,
+      })
+      .expect(201);
+
+    await request(app.getHttpServer())
+      .post('/answers')
+      .send({
+        sessionId: answeredSessionResponse.body.sessionId as string,
+        questionOrder: 1,
+        questionText: 'Tell me about yourself',
+        fullAnswer: 'Situation\nTask\nAction\nResult',
+        targetSeconds: 120,
+        elapsedSeconds: 100,
+      })
+      .expect(201);
+
+    const sessionsResponse = await request(app.getHttpServer())
+      .get('/sessions')
+      .expect(200);
+
+    expect(sessionsResponse.body).toEqual([
+      expect.objectContaining({
+        sessionId: answeredSessionResponse.body.sessionId,
+        answeredCount: 1,
+        totalElapsedSeconds: 100,
+      }),
+    ]);
+  });
+
   it('POST /answers rejects unknown sessions without persisting records', async () => {
     const missingSessionId = 'e2e-missing-session';
 

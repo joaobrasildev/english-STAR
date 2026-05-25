@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AnswersController } from './answers.controller';
 import { AnswersService } from './answers.service';
+import { CreateAnswerDto } from './dto/create-answer.dto';
 
 describe('AnswersController', () => {
   let controller: AnswersController;
@@ -63,5 +64,11 @@ describe('AnswersController', () => {
     expect(answersService.listAnswersBySession).toHaveBeenCalledWith(
       'session-1',
     );
+  });
+
+  it('preserves CreateAnswerDto metadata for the request body parameter', () => {
+    expect(
+      Reflect.getMetadata('design:paramtypes', AnswersController.prototype, 'createAnswer'),
+    ).toEqual([CreateAnswerDto]);
   });
 });

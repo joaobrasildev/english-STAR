@@ -161,4 +161,66 @@ describe('Session review flow', () => {
       }),
     ).toBeInTheDocument()
   })
+
+  it('keeps the full create-session -> save-answer -> history flow coherent', async () => {
+    const user = userEvent.setup()
+    createSession.mockResolvedValue({
+      sessionId: 'server-session-9',
+      rawQuestionBlock: '1. Tell me about yourself',
+      parsedQuestions: ['Tell me about yourself'],
+      targetSeconds: 120,
+      status: 'active',
+    })
+    createAnswer.mockResolvedValue({
+      id: 'answer-1',
+      sessionId: 'server-session-9',
+      questionOrder: 1,
+      questionText: 'Tell me about yourself',
+      fullAnswer: 'Answer',
+      targetSeconds: 120,
+      elapsedSeconds: 118,
+      createdAt: '2026-05-25T09:00:00.000Z',
+      updatedAt: '2026-05-25T09:00:00.000Z',
+    })
+    listSessions.mockResolvedValue([
+      {
+        sessionId: 'server-session-9',
+        answeredCount: 1,
+        targetSeconds: 120,
+        totalElapsedSeconds: 118,
+        completedAt: '2026-05-25T09:00:00.000Z',
+      },
+    ])
+    listAnswersBySession.mockResolvedValue([
+      {
+        id: 'answer-1',
+        sessionId: 'server-session-9',
+        questionOrder: 1,
+        questionText: 'Tell me about yourself',
+        fullAnswer: 'Answer',
+        targetSeconds: 120,
+        elapsedSeconds: 118,
+        createdAt: '2026-05-25T09:00:00.000Z',
+        updatedAt: '2026-05-25T09:00:00.000Z',
+      },
+    ])
+
+    render(<App />)
+
+    await user.type(screen.getByLabelText('Questions'), '1. Tell me about yourself')
+    await user.click(screen.getByRole('button', { name: 'Start session' }))
+    await user.click(screen.getByRole('button', { name: 'Start question' }))
+    await user.click(screen.getByRole('button', { name: 'Mark question as complete' }))
+    await user.click(screen.getByRole('button', { name: 'Confirm and save' }))
+
+    expect(await screen.findByText('server-session-9')).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'View saved history' }))
+
+    expect(await screen.findByText('server-session-9')).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: /server-session-9/i }))
+
+    expect(await screen.findByText('Tell me about yourself')).toBeInTheDocument()
+    expect(listAnswersBySession).toHaveBeenCalledWith('server-session-9')
+  })
 })

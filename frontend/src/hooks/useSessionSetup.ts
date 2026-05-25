@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { createSession, type CreateSessionResponse } from '../services/api'
 import type { PreparedSession } from '../types/session'
 import { parseQuestions } from '../utils/parseQuestions'
@@ -24,29 +24,46 @@ type UseSessionSetupOptions = {
 
 export function useSessionSetup(options: UseSessionSetupOptions = {}) {
   const createSessionRequest = options.createSessionRequest ?? createSession
-  const [rawQuestionBlock, setRawQuestionBlock] = useState('')
-  const [targetSecondsInput, setTargetSecondsInput] = useState(String(DEFAULT_TARGET_SECONDS))
+  const [rawQuestionBlock, setRawQuestionBlockState] = useState('')
+  const [targetSecondsInput, setTargetSecondsInputState] = useState(
+    String(DEFAULT_TARGET_SECONDS),
+  )
   const [errorMessage, setErrorMessage] = useState('')
   const [isStartingSession, setIsStartingSession] = useState(false)
   const [preparedSession, setPreparedSession] = useState<PreparedSession | null>(null)
+  const rawQuestionBlockRef = useRef(rawQuestionBlock)
+  const targetSecondsInputRef = useRef(targetSecondsInput)
 
   const parsedQuestions = useMemo(
     () => parseQuestions(rawQuestionBlock),
     [rawQuestionBlock],
   )
 
+  function setRawQuestionBlock(value: string) {
+    rawQuestionBlockRef.current = value
+    setRawQuestionBlockState(value)
+  }
+
+  function setTargetSecondsInput(value: string) {
+    targetSecondsInputRef.current = value
+    setTargetSecondsInputState(value)
+  }
+
   async function handleStartSession() {
     if (isStartingSession) {
       return
     }
 
-    if (parsedQuestions.length === 0) {
+    const currentRawQuestionBlock = rawQuestionBlockRef.current
+    const currentParsedQuestions = parseQuestions(currentRawQuestionBlock)
+
+    if (currentParsedQuestions.length === 0) {
       setPreparedSession(null)
       setErrorMessage('Add at least one numbered question before starting.')
       return
     }
 
-    const parsedTarget = Number(targetSecondsInput)
+    const parsedTarget = Number(targetSecondsInputRef.current)
     if (!Number.isInteger(parsedTarget) || parsedTarget <= 0) {
       setPreparedSession(null)
       setErrorMessage('Target time must be a positive number of seconds.')
@@ -58,8 +75,8 @@ export function useSessionSetup(options: UseSessionSetupOptions = {}) {
 
     try {
       const session = await createSessionRequest({
-        rawQuestionBlock,
-        parsedQuestions,
+        rawQuestionBlock: currentRawQuestionBlock,
+        parsedQuestions: currentParsedQuestions,
         targetSeconds: parsedTarget,
       })
 

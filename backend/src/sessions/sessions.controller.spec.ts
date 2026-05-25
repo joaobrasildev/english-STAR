@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { CreateSessionDto } from './dto/create-session.dto';
 import { SessionsController } from './sessions.controller';
 import { SessionsService } from './sessions.service';
 
@@ -37,5 +38,11 @@ describe('SessionsController', () => {
       sessionId: 'session-1',
     });
     expect(sessionsService.createSession).toHaveBeenCalledWith(payload);
+  });
+
+  it('preserves CreateSessionDto metadata for the request body parameter', () => {
+    expect(
+      Reflect.getMetadata('design:paramtypes', SessionsController.prototype, 'createSession'),
+    ).toEqual([CreateSessionDto]);
   });
 });

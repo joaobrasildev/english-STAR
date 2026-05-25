@@ -1,5 +1,5 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import type { CreateSessionDto } from './dto/create-session.dto';
+import { CreateSessionDto } from './dto/create-session.dto';
 import { SessionsService } from './sessions.service';
 
 @Controller()

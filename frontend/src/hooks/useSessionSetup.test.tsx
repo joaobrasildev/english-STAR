@@ -97,4 +97,29 @@ describe('useSessionSetup', () => {
       timerState: 'idle',
     })
   })
+
+  it('uses the latest typed questions and target even before the rerender completes', async () => {
+    const createSessionRequest = vi.fn().mockResolvedValue({
+      sessionId: 'server-session-77',
+      rawQuestionBlock: '1. Tell me about yourself',
+      parsedQuestions: ['Tell me about yourself'],
+      targetSeconds: 150,
+      status: 'active',
+    })
+    const { result } = renderHook(() =>
+      useSessionSetup({ createSessionRequest }),
+    )
+
+    await act(async () => {
+      result.current.setRawQuestionBlock('1. Tell me about yourself')
+      result.current.setTargetSecondsInput('150')
+      await result.current.handleStartSession()
+    })
+
+    expect(createSessionRequest).toHaveBeenCalledWith({
+      rawQuestionBlock: '1. Tell me about yourself',
+      parsedQuestions: ['Tell me about yourself'],
+      targetSeconds: 150,
+    })
+  })
 })

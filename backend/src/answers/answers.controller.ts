@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { AnswersService } from './answers.service';
-import type { CreateAnswerDto } from './dto/create-answer.dto';
+import { CreateAnswerDto } from './dto/create-answer.dto';
 
 @Controller()
 export class AnswersController {

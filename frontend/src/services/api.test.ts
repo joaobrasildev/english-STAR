@@ -14,7 +14,13 @@ describe('api service', () => {
   it('creates a persisted practice session through POST /sessions', async () => {
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
-      json: async () => ({ sessionId: 'server-session-1', status: 'active' }),
+      json: async () => ({
+        sessionId: 'server-session-1',
+        rawQuestionBlock: '1. Tell me about yourself',
+        parsedQuestions: ['Tell me about yourself'],
+        targetSeconds: 120,
+        status: 'active',
+      }),
     })
     vi.stubGlobal('fetch', fetchMock)
 
@@ -24,7 +30,13 @@ describe('api service', () => {
         parsedQuestions: ['Tell me about yourself'],
         targetSeconds: 120,
       }),
-    ).resolves.toEqual({ sessionId: 'server-session-1', status: 'active' })
+    ).resolves.toEqual({
+      sessionId: 'server-session-1',
+      rawQuestionBlock: '1. Tell me about yourself',
+      parsedQuestions: ['Tell me about yourself'],
+      targetSeconds: 120,
+      status: 'active',
+    })
 
     expect(fetchMock).toHaveBeenCalledWith(
       'http://localhost:3100/sessions',
@@ -94,13 +106,28 @@ describe('api service', () => {
   it('loads the saved session summaries', async () => {
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
-      json: async () => [{ sessionId: 'session-1', answeredCount: 2 }],
+      json: async () => [
+        {
+          sessionId: 'server-session-1',
+          answeredCount: 2,
+          targetSeconds: 120,
+          totalElapsedSeconds: 250,
+          completedAt: '2026-05-25T09:00:00.000Z',
+        },
+      ],
     })
     vi.stubGlobal('fetch', fetchMock)
 
     await expect(listSessions()).resolves.toEqual([
-      { sessionId: 'session-1', answeredCount: 2 },
+      {
+        sessionId: 'server-session-1',
+        answeredCount: 2,
+        targetSeconds: 120,
+        totalElapsedSeconds: 250,
+        completedAt: '2026-05-25T09:00:00.000Z',
+      },
     ])
+    expect(fetchMock).toHaveBeenCalledWith('http://localhost:3100/sessions')
   })
 
   it('loads the saved answers for a specific session and surfaces backend errors', async () => {
