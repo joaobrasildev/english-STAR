@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "Ajustar resumo e histórico para perguntas preservadas"
 type: frontend
 complexity: medium
@@ -29,10 +29,10 @@ Esta task garante que as superfícies de review da aplicação continuem legíve
 </requirements>
 
 ## Subtasks
-- [ ] 4.1 Ajustar a renderização compartilhada de perguntas salvas para suportar múltiplas linhas.
-- [ ] 4.2 Revisar estilos de summary/history para garantir wrapping e preservação de whitespace relevantes.
-- [ ] 4.3 Atualizar os testes de review para cenários com `questionText` multiline.
-- [ ] 4.4 Confirmar que ordenação e formatação de tempo continuam inalteradas.
+- [x] 4.1 Ajustar a renderização compartilhada de perguntas salvas para suportar múltiplas linhas.
+- [x] 4.2 Revisar estilos de summary/history para garantir wrapping e preservação de whitespace relevantes.
+- [x] 4.3 Atualizar os testes de review para cenários com `questionText` multiline.
+- [x] 4.4 Confirmar que ordenação e formatação de tempo continuam inalteradas.
 
 ## Implementation Details
 
@@ -66,13 +66,13 @@ A implementação deve reutilizar `SessionAnswersList` e os utilitários de `ses
 
 ## Tests
 - Unit tests:
-  - [ ] Helpers de `sessionReview` continuam ordenando respostas por `questionOrder`.
-  - [ ] Helpers de `sessionReview` continuam ordenando sessões por `completedAt`.
-  - [ ] A formatação de timing permanece inalterada após a introdução de `questionText` multiline.
+  - [x] Helpers de `sessionReview` continuam ordenando respostas por `questionOrder`.
+  - [x] Helpers de `sessionReview` continuam ordenando sessões por `completedAt`.
+  - [x] A formatação de timing permanece inalterada após a introdução de `questionText` multiline.
 - Integration tests:
-  - [ ] O resumo final da sessão exibe uma pergunta salva com múltiplas linhas sem achatamento.
-  - [ ] O histórico carrega uma sessão salva e exibe perguntas multiline em ordem correta.
-  - [ ] A navegação de review continua funcionando sem regressão de labels e tempos.
+  - [x] O resumo final da sessão exibe uma pergunta salva com múltiplas linhas sem achatamento.
+  - [x] O histórico carrega uma sessão salva e exibe perguntas multiline em ordem correta.
+  - [x] A navegação de review continua funcionando sem regressão de labels e tempos.
 - Test coverage target: >=80%
 - All tests must pass
 

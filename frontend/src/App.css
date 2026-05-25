@@ -458,6 +458,11 @@
   margin: 0;
 }
 
+.session-review-question {
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
 .history-grid {
   margin-top: 1.5rem;
   display: grid;
