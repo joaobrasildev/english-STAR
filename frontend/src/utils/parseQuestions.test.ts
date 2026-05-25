@@ -19,8 +19,25 @@ describe('parseQuestions', () => {
         2. Tell me about a risk you mitigated
       `),
     ).toEqual([
-      'Describe a difficult stakeholder and how you aligned expectations',
+      'Describe a difficult stakeholder\nand how you aligned expectations',
       'Tell me about a risk you mitigated',
+    ])
+  })
+
+  it('preserves blank lines inside a question while trimming trailing blanks', () => {
+    expect(
+      parseQuestions(`
+        1. Tell me about a project
+        where you had to recover trust
+
+        Focus on the turning point.
+
+
+        2. Describe a challenge you solved
+      `),
+    ).toEqual([
+      'Tell me about a project\nwhere you had to recover trust\n\nFocus on the turning point.',
+      'Describe a challenge you solved',
     ])
   })
 

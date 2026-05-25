@@ -21,6 +21,33 @@ describe('Session setup flow', () => {
     ])
   })
 
+  it('preserves multiline questions in the preview and when starting the session', async () => {
+    const user = userEvent.setup()
+
+    render(<App />)
+
+    await user.type(
+      screen.getByLabelText('Questions'),
+      '1. Tell me about yourself{enter}Focus on the most recent role.{enter}{enter}2. Describe a challenge you solved',
+    )
+
+    const previewItems = screen.getAllByRole('listitem')
+    expect(previewItems[0].querySelector('.preview-question')?.textContent).toBe(
+      'Tell me about yourself\nFocus on the most recent role.',
+    )
+
+    await user.click(screen.getByRole('button', { name: 'Start session' }))
+
+    expect(
+      screen.getByText((_, element) => {
+        return (
+          element?.classList.contains('question-text') === true &&
+          element.textContent === 'Tell me about yourself\nFocus on the most recent role.'
+        )
+      }),
+    ).toBeInTheDocument()
+  })
+
   it('creates the initial session state with currentIndex zero when starting a valid session', async () => {
     const user = userEvent.setup()
 

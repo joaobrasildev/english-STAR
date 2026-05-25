@@ -1,33 +1,39 @@
 const QUESTION_PATTERN = /^\s*(\d+)[.)]\s*(.+)\s*$/
 
+function finalizeQuestion(lines: string[]): string {
+  let end = lines.length
+
+  while (end > 0 && lines[end - 1] === '') {
+    end -= 1
+  }
+
+  return lines.slice(0, end).join('\n')
+}
+
 export function parseQuestions(rawQuestionBlock: string): string[] {
-  const lines = rawQuestionBlock
-    .split(/\r?\n/)
-    .map((line) => line.trim())
-    .filter((line) => line.length > 0)
-
   const questions: string[] = []
-  let currentQuestion = ''
+  let currentQuestionLines: string[] = []
 
-  for (const line of lines) {
+  for (const rawLine of rawQuestionBlock.split(/\r?\n/)) {
+    const line = rawLine.trim()
     const match = line.match(QUESTION_PATTERN)
 
     if (match) {
-      if (currentQuestion) {
-        questions.push(currentQuestion)
+      if (currentQuestionLines.length > 0) {
+        questions.push(finalizeQuestion(currentQuestionLines))
       }
 
-      currentQuestion = match[2]
+      currentQuestionLines = [match[2]]
       continue
     }
 
-    if (currentQuestion) {
-      currentQuestion = `${currentQuestion} ${line}`.trim()
+    if (currentQuestionLines.length > 0) {
+      currentQuestionLines.push(line)
     }
   }
 
-  if (currentQuestion) {
-    questions.push(currentQuestion)
+  if (currentQuestionLines.length > 0) {
+    questions.push(finalizeQuestion(currentQuestionLines))
   }
 
   return questions

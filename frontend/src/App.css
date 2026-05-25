@@ -150,6 +150,11 @@
   color: #f8fafc;
 }
 
+.preview-question {
+  margin: 0;
+  white-space: pre-line;
+}
+
 .error-text {
   margin: 0;
   color: #fda4af;

@@ -17,7 +17,9 @@ export function QuestionPreview({ questions }: QuestionPreviewProps) {
       ) : (
         <ol className="preview-list">
           {questions.map((question, index) => (
-            <li key={`${index}-${question}`}>{question}</li>
+            <li key={`${index}-${question}`}>
+              <p className="preview-question">{question}</p>
+            </li>
           ))}
         </ol>
       )}
