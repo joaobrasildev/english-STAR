@@ -11,7 +11,7 @@ describe('AnswersService', () => {
     id: '1',
     sessionId: 'session-1',
     questionOrder: 1,
-    questionText: 'Tell me about a challenge.',
+    questionText: 'Tell me about a challenge.\nFocus on the turning point.',
     fullAnswer: 'Situation\nTask\nAction\nResult',
     targetSeconds: 120,
     elapsedSeconds: 135,
@@ -38,7 +38,7 @@ describe('AnswersService', () => {
       service.createAnswer({
         sessionId: '',
         questionOrder: 1,
-        questionText: 'Question',
+        questionText: 'Question line 1\nQuestion line 2',
         fullAnswer: 'Answer',
         targetSeconds: 60,
         elapsedSeconds: 10,
@@ -51,7 +51,7 @@ describe('AnswersService', () => {
       service.createAnswer({
         sessionId: 'session-1',
         questionOrder: 1,
-        questionText: 'Question',
+        questionText: 'Question line 1\nQuestion line 2',
         fullAnswer: 'Answer',
         targetSeconds: 60,
         elapsedSeconds: -1,
@@ -108,7 +108,7 @@ describe('AnswersService', () => {
       service.createAnswer({
         sessionId: 'session-1',
         questionOrder: 1,
-        questionText: 'Question',
+        questionText: 'Question line 1\nQuestion line 2',
         fullAnswer: 'Answer',
         targetSeconds: 60,
         elapsedSeconds: 10,

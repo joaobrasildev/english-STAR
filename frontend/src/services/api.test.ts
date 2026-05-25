@@ -21,7 +21,7 @@ describe('api service', () => {
       createAnswer({
         sessionId: 'session-1',
         questionOrder: 1,
-        questionText: 'Question',
+        questionText: 'Question line 1\nQuestion line 2',
         fullAnswer: 'Answer',
         targetSeconds: 90,
         elapsedSeconds: 95,
@@ -32,6 +32,14 @@ describe('api service', () => {
       'http://localhost:3100/answers',
       expect.objectContaining({
         method: 'POST',
+        body: JSON.stringify({
+          sessionId: 'session-1',
+          questionOrder: 1,
+          questionText: 'Question line 1\nQuestion line 2',
+          fullAnswer: 'Answer',
+          targetSeconds: 90,
+          elapsedSeconds: 95,
+        }),
       }),
     )
   })

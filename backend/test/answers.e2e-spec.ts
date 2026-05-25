@@ -66,7 +66,8 @@ describe('Answers endpoints (e2e)', () => {
     const payload = {
       sessionId: 'e2e-session-1',
       questionOrder: 1,
-      questionText: 'Tell me about a challenge you solved.',
+      questionText:
+        'Tell me about a challenge you solved.\nFocus on the turning point.',
       fullAnswer: 'Situation\nTask\nAction\nResult',
       targetSeconds: 120,
       elapsedSeconds: 145,

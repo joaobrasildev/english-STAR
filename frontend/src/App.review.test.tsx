@@ -30,7 +30,7 @@ describe('Session review flow', () => {
       id: 'answer-1',
       sessionId: 'session-1',
       questionOrder: 1,
-      questionText: 'Tell me about yourself',
+      questionText: 'Tell me about yourself\nFocus on the most recent role.',
       fullAnswer: 'Answer',
       targetSeconds: 120,
       elapsedSeconds: 135,
@@ -40,14 +40,24 @@ describe('Session review flow', () => {
 
     render(<App />)
 
-    await user.type(screen.getByLabelText('Questions'), '1. Tell me about yourself')
+    await user.type(
+      screen.getByLabelText('Questions'),
+      '1. Tell me about yourself{enter}Focus on the most recent role.',
+    )
     await user.click(screen.getByRole('button', { name: 'Start session' }))
     await user.click(screen.getByRole('button', { name: 'Start question' }))
     await user.click(screen.getByRole('button', { name: 'Mark question as complete' }))
     await user.click(screen.getByRole('button', { name: 'Confirm and save' }))
 
     expect(await screen.findByText('Review the timing for this session')).toBeInTheDocument()
-    expect(screen.getByText('Tell me about yourself')).toBeInTheDocument()
+    expect(
+      screen.getByText((_, element) => {
+        return (
+          element?.classList.contains('session-review-question') === true &&
+          element.textContent === 'Tell me about yourself\nFocus on the most recent role.'
+        )
+      }),
+    ).toBeInTheDocument()
     expect(screen.getByText('Target 02:00 · Actual 02:15')).toBeInTheDocument()
   })
 
@@ -99,7 +109,7 @@ describe('Session review flow', () => {
         id: 'answer-1',
         sessionId: 'session-1',
         questionOrder: 1,
-        questionText: 'First question',
+        questionText: 'First question\nWith follow-up detail',
         fullAnswer: 'Answer 1',
         targetSeconds: 120,
         elapsedSeconds: 115,
@@ -125,5 +135,13 @@ describe('Session review flow', () => {
     const detailItems = screen.getAllByRole('listitem')
     expect(detailItems.at(-2)).toHaveTextContent('Question 1')
     expect(detailItems.at(-1)).toHaveTextContent('Question 2')
+    expect(
+      screen.getByText((_, element) => {
+        return (
+          element?.classList.contains('session-review-question') === true &&
+          element.textContent === 'First question\nWith follow-up detail'
+        )
+      }),
+    ).toBeInTheDocument()
   })
 })

@@ -163,7 +163,7 @@ describe('Practice session flow', () => {
       id: 'answer-1',
       sessionId: 'session-1',
       questionOrder: 1,
-      questionText: 'Tell me about yourself',
+      questionText: 'Tell me about yourself\nFocus on the most recent role.',
       fullAnswer: 'Situation text\n\n\n\n\n\n',
       targetSeconds: 2,
       elapsedSeconds: 0,
@@ -171,7 +171,19 @@ describe('Practice session flow', () => {
       updatedAt: '2026-05-25T09:00:00.000Z',
     })
 
-    render(<PracticeSession session={createSession()} />)
+    render(
+      <PracticeSession
+        session={{
+          ...createSession(),
+          rawQuestionBlock:
+            '1. Tell me about yourself\nFocus on the most recent role.\n2. Describe a challenge you solved',
+          parsedQuestions: [
+            'Tell me about yourself\nFocus on the most recent role.',
+            'Describe a challenge you solved',
+          ],
+        }}
+      />,
+    )
 
     fireEvent.change(screen.getByRole('textbox', { name: /Situation \(S\)/ }), {
       target: { value: 'Situation text' },
@@ -187,7 +199,7 @@ describe('Practice session flow', () => {
     expect(createAnswer).toHaveBeenCalledWith({
       sessionId: 'session-1',
       questionOrder: 1,
-      questionText: 'Tell me about yourself',
+      questionText: 'Tell me about yourself\nFocus on the most recent role.',
       fullAnswer: 'Situation text\n\n\n\n\n\n',
       targetSeconds: 2,
       elapsedSeconds: 0,

@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "Propagar e persistir `questionText` preservado"
 type: frontend
 complexity: high
@@ -29,10 +29,10 @@ Esta task garante que a pergunta multiline preservada em `parsedQuestions` seja 
 </requirements>
 
 ## Subtasks
-- [ ] 3.1 Confirmar que `usePracticeSession` envia o valor preservado de `parsedQuestions` como `questionText`.
-- [ ] 3.2 Validar a camada de API do frontend para garantir envio e leitura do payload multiline sem transformação paralela.
-- [ ] 3.3 Ajustar as expectativas de testes de frontend e backend para `questionText` preservado.
-- [ ] 3.4 Confirmar que o backend persiste e retorna o texto preservado sem exigir alteração de schema.
+- [x] 3.1 Confirmar que `usePracticeSession` envia o valor preservado de `parsedQuestions` como `questionText`.
+- [x] 3.2 Validar a camada de API do frontend para garantir envio e leitura do payload multiline sem transformação paralela.
+- [x] 3.3 Ajustar as expectativas de testes de frontend e backend para `questionText` preservado.
+- [x] 3.4 Confirmar que o backend persiste e retorna o texto preservado sem exigir alteração de schema.
 
 ## Implementation Details
 
@@ -71,13 +71,13 @@ O foco é o contrato de salvamento, não um redesign de API. Veja o TechSpec nas
 
 ## Tests
 - Unit tests:
-  - [ ] `usePracticeSession` envia `questionText` multiline preservado ao confirmar o save.
-  - [ ] `createAnswer` envia o payload esperado sem normalizar `questionText`.
-  - [ ] Specs de service/repository aceitam `questionText` multiline sem erro.
+  - [x] `usePracticeSession` envia `questionText` multiline preservado ao confirmar o save.
+  - [x] `createAnswer` envia o payload esperado sem normalizar `questionText`.
+  - [x] Specs de service/repository aceitam `questionText` multiline sem erro.
 - Integration tests:
-  - [ ] O fluxo de salvamento da `PracticeSession` chama `createAnswer` com o texto multiline preservado.
-  - [ ] `POST /answers` persiste `questionText` multiline e `GET /sessions/:sessionId/answers` devolve o mesmo texto.
-  - [ ] O fluxo de review continua carregando respostas salvas com `questionText` multiline.
+  - [x] O fluxo de salvamento da `PracticeSession` chama `createAnswer` com o texto multiline preservado.
+  - [x] `POST /answers` persiste `questionText` multiline e `GET /sessions/:sessionId/answers` devolve o mesmo texto.
+  - [x] O fluxo de review continua carregando respostas salvas com `questionText` multiline.
 - Test coverage target: >=80%
 - All tests must pass
 

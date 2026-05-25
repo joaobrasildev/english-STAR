@@ -7,9 +7,9 @@ function createSession(): PreparedSession {
   return {
     sessionId: 'session-1',
     rawQuestionBlock:
-      '1. Tell me about yourself\n2. Describe a challenge you solved',
+      '1. Tell me about yourself\nFocus on the most recent role.\n2. Describe a challenge you solved',
     parsedQuestions: [
-      'Tell me about yourself',
+      'Tell me about yourself\nFocus on the most recent role.',
       'Describe a challenge you solved',
     ],
     targetSeconds: 120,
@@ -43,7 +43,7 @@ describe('usePracticeSession', () => {
       id: 'answer-1',
       sessionId: 'session-1',
       questionOrder: 1,
-      questionText: 'Tell me about yourself',
+      questionText: 'Tell me about yourself\nFocus on the most recent role.',
       fullAnswer: 'Situation\n\nTask\n\nAction\n\nResult',
       targetSeconds: 120,
       elapsedSeconds: 0,
@@ -70,7 +70,7 @@ describe('usePracticeSession', () => {
     expect(saveAnswer).toHaveBeenCalledWith({
       sessionId: 'session-1',
       questionOrder: 1,
-      questionText: 'Tell me about yourself',
+      questionText: 'Tell me about yourself\nFocus on the most recent role.',
       fullAnswer: 'Situation\n\nTask\n\nAction\n\nResult',
       targetSeconds: 120,
       elapsedSeconds: 0,
@@ -93,7 +93,9 @@ describe('usePracticeSession', () => {
       await result.current.confirmFinishQuestion()
     })
 
-    expect(result.current.currentQuestion).toBe('Tell me about yourself')
+    expect(result.current.currentQuestion).toBe(
+      'Tell me about yourself\nFocus on the most recent role.',
+    )
     expect(result.current.currentAnswer.s).toBe('Current answer still here')
     expect(result.current.saveError).toBe('API unavailable')
     expect(result.current.currentIndex).toBe(0)
